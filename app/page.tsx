@@ -1,65 +1,140 @@
+import { ArrowRightIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
+import Link from "next/link";
+import { ArticleCard } from "@/components/article-card";
+import { CategoryFeature } from "@/components/category-feature";
+import {
+  getArticlesByCategory,
+  getFeaturedArticle,
+  getLatestArticles,
+  categories,
+} from "@/lib/content";
 
-export default function Home() {
+export default async function Home() {
+  const featuredArticle = await getFeaturedArticle();
+  const latestArticles = await getLatestArticles(4);
+  const leadArticles = latestArticles
+    .filter((article) => article.slug !== featuredArticle.slug)
+    .slice(0, 3);
+  const categoryRows = await Promise.all(
+    categories.map(async (category) => ({
+      category,
+      articles: await getArticlesByCategory(category.slug, 2),
+    })),
+  );
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="pb-12 pt-6">
+      <section className="grid gap-6 lg:grid-cols-[1.28fr_0.82fr]">
+        <article className="panel overflow-hidden p-5 md:p-6">
+          <div className="mb-4">
+            <p className="container-label">Historia destacada</p>
+          </div>
+          <article className="group overflow-hidden border border-[var(--line)] bg-white shadow-[var(--shadow)]">
+            <div className="relative m-3 aspect-[16/10] overflow-hidden">
+              <Image
+                src={featuredArticle.heroImage}
+                alt={featuredArticle.heroAlt}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover sepia-[0.12] transition duration-700 group-hover:scale-[1.02]"
+              />
+            </div>
+            <div className="px-5 pb-5 md:px-6 md:pb-6">
+              <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.24em] text-[var(--muted)]">
+                <span className="font-sans text-[var(--accent)]">
+                  {featuredArticle.categoryLabel}
+                </span>
+              </div>
+              <Link
+                href={`/articulos/${featuredArticle.slug}`}
+                className="mt-3 block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+              >
+                <h1 className="max-w-4xl font-display text-[3.3rem] leading-[0.9] tracking-[-0.06em] text-balance transition-colors group-hover:text-[var(--accent)] sm:text-[4.6rem]">
+                  {featuredArticle.title}
+                </h1>
+              </Link>
+              <p className="mt-4 max-w-3xl text-[1.08rem] leading-[1.52] tracking-[-0.012em] text-[var(--muted)]">
+                {featuredArticle.excerpt}
+              </p>
+              <Link
+                href={`/articulos/${featuredArticle.slug}`}
+                className="mt-5 inline-flex items-center gap-2 font-sans text-xs uppercase tracking-[0.24em] text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--accent)]"
+              >
+                Leer más
+                <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden="true" />
+              </Link>
+            </div>
+          </article>
+        </article>
+
+        <aside className="grid gap-6">
+          <section className="panel flex h-full flex-col p-5 md:p-6">
+            <div>
+              <h2 className="container-label">Artículos populares</h2>
+            </div>
+            <div className="mt-5 flex flex-1 flex-col justify-between gap-4">
+              {leadArticles.map((article) => (
+                <article
+                  key={article.slug}
+                  className="group border border-[var(--line)] bg-white p-4 shadow-[var(--shadow)] transition-colors hover:border-[var(--line-strong)] hover:bg-white"
+                >
+                  <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+                    <span className="font-sans text-[var(--accent)]">
+                      {article.categoryLabel}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/articulos/${article.slug}`}
+                    className="mt-3 block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--accent)]"
+                  >
+                    <h3 className="font-display text-[2.2rem] leading-[0.94] tracking-[-0.045em] transition-colors group-hover:text-[var(--accent)]">
+                      {article.title}
+                    </h3>
+                  </Link>
+                  <p className="mt-3 max-w-xl text-base leading-[1.5] tracking-[-0.01em] text-[var(--muted)]">
+                    {article.excerpt}
+                  </p>
+                  <Link
+                    href={`/articulos/${article.slug}`}
+                    className="mt-4 inline-flex items-center gap-2 font-sans text-xs uppercase tracking-[0.24em] text-[var(--accent)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--accent)]"
+                  >
+                    Leer más
+                    <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </section>
+        </aside>
+      </section>
+
+      <section className="story-grid mt-8 panel p-5 md:p-6">
+        <div className="mb-6">
+          <p className="container-label">Últimas historias</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {latestArticles.map((article, index) => (
+            <ArticleCard
+              key={article.slug}
+              article={article}
+              priority={index === 0}
+              variant="stacked"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="mt-8 grid gap-6">
+        {categoryRows.map(({ category, articles }) => (
+          <CategoryFeature
+            key={category.slug}
+            category={category}
+            articles={articles}
+          />
+        ))}
+      </section>
+    </main>
   );
 }

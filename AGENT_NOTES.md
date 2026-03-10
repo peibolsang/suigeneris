@@ -1,0 +1,69 @@
+# Agent Notes
+
+## 2026-03-10
+
+- Created this file because the repository instructions require checking and updating it during each session.
+- Confirmed the repo had no explicit policy making installed skills mandatory by trigger; updated `AGENTS.md` to add that guidance.
+- `AGENT_NOTES.md` was missing, so future sessions should read this file before implementing changes.
+- Built the first full editorial version of `Sui géneris` with a typed MDX content layer, category archives, and long-form article templates.
+- `next-mdx-remote` plus `gray-matter` worked cleanly for local MDX content in the App Router without needing a heavier CMS setup.
+- `next/font/google` was a bad fit for this restricted environment because build-time font fetching failed; local editorial font stacks are the safer default here.
+- The default Turbopack production build failed in the sandbox because PostCSS could not spawn the required process, while `next build --webpack` completed successfully.
+- MDX custom components should not blindly wrap `children` in block tags like `<p>` because MDX often already passes paragraph nodes, which creates invalid nested markup and hydration errors.
+- For typography experiments, self-hosted font packages worked well: `@fontsource/playfair-display` for display headings and `geist/font/sans` for body/UI text kept the build local and reproducible.
+- Geist needs tighter line-height than the earlier serif reading system, especially in large homepage/editorial copy blocks; reducing leading and adding slight negative tracking produces a denser, cleaner rhythm.
+- The top of the landing page should distinguish clearly between content and framing: one explicit featured article, separate latest-reading links, and a small explanatory intro work better than pseudo-editorial text blocks that look like content but are not clickable.
+- When the global page background is lightened, article-card fills must be rebalanced too; otherwise old warm-tinted card backgrounds look unintentionally orangey against the new page tone.
+- User preference: do not run a full production build after every small change. For routine UI/copy/style tweaks, prefer lighter validation (for example lint only, or no validation if the change is trivial) and reserve full builds for riskier structural changes.
+- Removing a specific editorial phrase from the header was a trivial copy-only change; no broader validation was necessary beyond confirming the source string location first.
+- The current background works best when panels and cards shift cooler and slightly denser than the page; neutral stone-paper surfaces separate the typography more cleanly than translucent peach tones.
+- Correction from user: the stone-paper experiment overshot. The preferred direction is simpler white cards against the existing page background.
+- For header rhythm tweaks, reduce spacing by adjusting the shared header padding first; that is safer than changing page-level section spacing across routes.
+- In fully clickable editorial cards, explicit CTA text can be redundant; removing it keeps the layout quieter when affordance is already clear.
+- Reading time should stay on the article page, not on navigation cards or homepage listings; those surfaces read better when category alone handles the metadata cue.
+- The `Lecturas recientes` header works better without supporting body copy; the grid itself already explains the section.
+- Homepage container sections need one shared label treatment; using a slightly larger, bolder version of the `Historia destacada` eyebrow keeps section framing consistent without competing with the article titles.
+- The shared container label can carry more authority than the default eyebrow; a bigger size and heavier weight improve hierarchy for panel-level headings.
+- The `Últimas lecturas` container reads cleaner with just the section label; the helper sentence and divider were adding noise without adding navigation value.
+- Container labels can be retitled without structural changes; keep the presentation stable when the user is only refining editorial framing.
+- When a side column must align its first and last cards with a neighboring featured block, use a full-height flex column with `justify-between` rather than a simple stacked grid.
+- The featured article category label reads better inside the card above the title than beside the container heading; that keeps metadata attached to content rather than to layout chrome.
+- The `Últimos ensayos` section does not need a second display title under the container label; the extra heading only duplicates meaning and weakens the hierarchy.
+- Once a section is reduced to a single container label, the divider under it often becomes unnecessary visual chrome and can be removed.
+- On article pages, the `Etiquetas` sidebar box is expendable when tags are already present near the header; repeating them in the aside adds clutter without improving navigation.
+- On article pages, aligning the sidebar box with the first media block requires removing the header divider gap and clearing the top margin on the first content element.
+- For MDX media and pull quotes, first-element top alignment is more reliable when the components themselves use `first:mt-0`, because utility margins can override generic global resets.
+- `Lectura guiada` should only exist if it is driven by real article headings; making it sticky and anchor-linked turns it from boilerplate into useful reading navigation.
+- The article text column should use the full available width of its content track; narrow `max-width` limits make paragraphs break too early and visually misalign with full-width images and pull quotes.
+- Landing-page surface hierarchy should stay simple: outer containers on `--panel`, nested navigation cards on `--card-surface-strong`.
+- The sticky `Lectura guiada` box reads more crisply as a white utility card than as a muted surface.
+- If a surface must read unmistakably white, use `bg-white` directly instead of a near-white theme token.
+- Same rule for landing-page inner cards: when the user wants obvious white, use `bg-white` directly on the nested cards instead of a token.
+- Theme consistency rule: page background stays unchanged, all outer editorial containers use `--panel`, and all nested media/utility/cards inside those containers should resolve to pure white.
+- Article image captions read better as normal body-support text than as uppercase UI labels; avoid tracked all-caps for descriptive captions.
+- Matching two white card types sometimes requires matching shadow treatment too, not just background color.
+- The same applies on the landing page: if inner cards are meant to belong to the same white-card family as article media/utilities, give them the same shadow token.
+- Category-style container cards below the homepage hero read cleaner without divider lines under their headings.
+- For small directional link cues like `Ver archivo`, a compact Radix arrow works well and stays visually consistent with the rest of the UI.
+- The lower homepage container cards can share one framing label when category-specific kickers feel too noisy; `Estilo destacado` works as a neutral common label.
+- Pull quotes do not need large vertical isolation in this layout; tighter outer margins keep the reading flow denser and more controlled.
+- For article quotes, a better balance is to keep the display face but reduce its size rather than switching the quote to body typography.
+- Pull quotes can share the same accent color as the `Lectura guiada` label when they should read as highlighted editorial emphasis rather than as body text.
+- The current quote scale works better smaller than `2rem`; reducing it improves continuity with the surrounding article rhythm while preserving the display face.
+- After reduction, the quote scale still benefits from a slight step back up; `1.7rem` is a better balance here than `1.6rem`.
+- Pull-quote cards fit this system better with square corners; the rounded shape felt too ornamental relative to the rest of the editorial surfaces.
+- For pull quotes, a small Radix quote icon in the top-left creates a cleaner cue than relying on the text styling alone; keep the quote text below it.
+- Article metadata above the title should stay minimal; date and reading time are enough, with a bullet separator for rhythm.
+- Spanish copy quality needs a full-repo pass when accents are missing; the errors were spread across MDX frontmatter, headings, captions, and body paragraphs rather than isolated to one article.
+- When adjusting editorial chronology, preserve the existing article order unless the user asks for a different ranking; here the dates were normalized to weekly intervals ending on March 10, 2026.
+- Header whitespace under the logo is controlled by the shared header bottom padding; setting it to zero is the cleanest way to collapse that gap globally.
+- The homepage recent-content section can be framed more broadly as `Últimas historias` when `ensayos` feels too narrow.
+- Landing-page sub-cards benefit from a consistent `Leer más` footer using the same directional arrow language as `Ver archivo`.
+- For row consistency on landing-page cards, make each card a full-height flex column and push the footer to the bottom; otherwise the text blocks feel optically misaligned even when the image sizes match.
+- For article teaser sub-cards, do not make the whole card clickable when the user wants more precise affordances; restrict navigation to the title and `Leer más`.
+- The same precise-link rule should apply to the featured homepage sub-card: image and card shell stay passive, while the title and `Leer más` carry navigation.
+- Small brand-adjacent header copy like `Textiles con biografía` can take a semibold weight without needing any broader layout change.
+- The logo tagline looks better centered to the logo lockup with tighter tracking; wide all-caps spacing was pushing it off-balance.
+- For a stronger page break, the logo lockup can sit centered with a simple black divider line directly beneath the shared header.
+- The perceived logo misalignment came from asymmetric transparent padding inside `logo.png`; adding a tiny image-level horizontal offset (`-0.6%`) produces true visual centering while preserving layout centering.
+- Header dividers should use `var(--line)` to stay visually aligned with container card borders instead of introducing a separate black rule.
