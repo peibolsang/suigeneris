@@ -93,3 +93,4 @@
 - For cross-site editorial improvement passes, the safest gains come from adding one concrete historical or material qualifier at a time; small precision edits preserve cadence better than "improving" by rewriting whole paragraphs.
 - When adding a second editorial taxonomy to the articles, keep it separate from the thematic `category`; a dedicated `storyType` frontmatter field avoids overloading the existing content model and leaves the UI free to adopt it later.
 - When a second navigation axis is introduced, keep the existing thematic menu intact and add a separate entrypoint for the editorial taxonomy; in this site, `Estilos` and `Explorar` should stay distinct because they answer different browsing questions.
+- For Vercel Analytics in an App Router project, the minimal integration is enough: install `@vercel/analytics` and mount `<Analytics />` once in `app/layout.tsx` so every route is covered without extra client plumbing.
