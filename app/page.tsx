@@ -25,10 +25,13 @@ export default async function Home() {
 
   return (
     <main className="pb-12 pt-6">
-      <section className="grid gap-6 lg:grid-cols-[1.28fr_0.82fr]">
+      <section
+        id="historia-destacada"
+        className="grid gap-6 lg:grid-cols-[1.28fr_0.82fr]"
+      >
         <article className="panel overflow-hidden p-5 md:p-6">
           <div className="mb-4">
-            <p className="container-label">Historia destacada</p>
+            <p className="container-label">Destacada</p>
           </div>
           <article className="group overflow-hidden border border-[var(--line)] bg-white shadow-[var(--shadow)]">
             <div className="relative m-3 aspect-[16/10] overflow-hidden">
@@ -43,6 +46,8 @@ export default async function Home() {
             </div>
             <div className="px-5 pb-5 md:px-6 md:pb-6">
               <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.24em] text-[var(--muted)]">
+                <span>{featuredArticle.publishedLabel}</span>
+                <span aria-hidden="true">•</span>
                 <span className="font-sans text-[var(--accent)]">
                   {featuredArticle.categoryLabel}
                 </span>
@@ -70,9 +75,12 @@ export default async function Home() {
         </article>
 
         <aside className="grid gap-6">
-          <section className="panel flex h-full flex-col p-5 md:p-6">
+          <section
+            id="articulos-populares"
+            className="panel flex h-full flex-col p-5 md:p-6"
+          >
             <div>
-              <h2 className="container-label">Artículos populares</h2>
+              <h2 className="container-label">Lo + popular</h2>
             </div>
             <div className="mt-5 flex flex-1 flex-col justify-between gap-4">
               {leadArticles.map((article) => (
@@ -81,6 +89,8 @@ export default async function Home() {
                   className="group border border-[var(--line)] bg-white p-4 shadow-[var(--shadow)] transition-colors hover:border-[var(--line-strong)] hover:bg-white"
                 >
                   <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+                    <span>{article.publishedLabel}</span>
+                    <span aria-hidden="true">•</span>
                     <span className="font-sans text-[var(--accent)]">
                       {article.categoryLabel}
                     </span>
@@ -110,9 +120,16 @@ export default async function Home() {
         </aside>
       </section>
 
-      <section className="story-grid mt-8 panel p-5 md:p-6">
-        <div className="mb-6">
-          <p className="container-label">Últimas historias</p>
+      <section id="ultimas-historias" className="story-grid mt-8 panel p-5 md:p-6">
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="container-label">Lo último</p>
+          <Link
+            href="/lecturas"
+            className="inline-flex items-center gap-2 self-start font-sans text-xs uppercase tracking-[0.24em] text-[var(--accent)] transition-colors hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[var(--accent)]"
+          >
+            Ver todo
+            <ArrowRightIcon className="h-3.5 w-3.5" aria-hidden="true" />
+          </Link>
         </div>
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {latestArticles.map((article, index) => (
@@ -126,7 +143,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mt-8 grid gap-6">
+      <section id="archivo-tematico" className="mt-8 grid gap-6">
         {categoryRows.map(({ category, articles }) => (
           <CategoryFeature
             key={category.slug}

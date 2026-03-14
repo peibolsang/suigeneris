@@ -108,6 +108,10 @@ a {
   contain-intrinsic-size: 900px;
 }
 
+.archive-row + .archive-row {
+  border-top: 1px solid var(--line);
+}
+
 .article-body {
   display: grid;
   gap: 1.1rem;

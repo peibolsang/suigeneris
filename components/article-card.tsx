@@ -58,8 +58,12 @@ export function ArticleCard({
           />
         </div>
         <div className="flex flex-1 flex-col">
-          <p className="font-sans text-[0.72rem] uppercase tracking-[0.24em] text-[var(--accent)]">
-            {article.categoryLabel}
+          <p className="font-sans text-[0.72rem] uppercase tracking-[0.24em] text-[var(--muted)]">
+            <span>{article.publishedLabel}</span>
+            <span aria-hidden="true" className="mx-2 text-[var(--muted)]">
+              •
+            </span>
+            <span className="text-[var(--accent)]">{article.categoryLabel}</span>
           </p>
           <Link
             href={`/articulos/${article.slug}`}
@@ -97,6 +101,8 @@ export function ArticleCard({
         />
       </div>
       <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+        <span>{article.publishedLabel}</span>
+        <span aria-hidden="true">•</span>
         <span className="font-sans text-[var(--accent)]">{article.categoryLabel}</span>
       </div>
       <div className="flex flex-1 flex-col">

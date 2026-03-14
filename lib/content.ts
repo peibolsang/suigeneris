@@ -54,6 +54,47 @@ export const categories = [
 
 export type Category = (typeof categories)[number];
 export type CategorySlug = Category["slug"];
+export const storyTypes = [
+  {
+    slug: "lo-basico",
+    label: "Lo Básico",
+    description:
+      "Puertas de entrada para entender una prenda, un tejido o un lenguaje del menswear desde sus ideas esenciales.",
+  },
+  {
+    slug: "historia",
+    label: "Historia",
+    description:
+      "Piezas donde el arco principal pasa por el origen, la evolución y la vida cultural de una prenda, marca o material.",
+  },
+  {
+    slug: "variantes",
+    label: "Variantes",
+    description:
+      "Artículos que ordenan familias cercanas y enseñan a distinguir versiones, ramas y diferencias que suelen mezclarse.",
+  },
+  {
+    slug: "iconos",
+    label: "Iconos",
+    description:
+      "Perfiles de prendas, modelos, tejidos y objetos que siguen importando por su forma, su lógica y su peso cultural.",
+  },
+  {
+    slug: "como-llevarlo",
+    label: "Cómo llevarlo",
+    description:
+      "Lecturas orientadas al uso real: combinaciones, equilibrio visual y criterios para integrar una pieza en el armario.",
+  },
+  {
+    slug: "opinion",
+    label: "Opinión",
+    description:
+      "Textos donde manda una tesis editorial clara sobre gusto, método o cultura material dentro del menswear.",
+  },
+] as const;
+
+export type StoryType = (typeof storyTypes)[number]["label"];
+export type StoryTypeSlug = (typeof storyTypes)[number]["slug"];
 
 type ArticleFrontmatter = {
   title: string;
@@ -62,6 +103,7 @@ type ArticleFrontmatter = {
   publishedAt: string;
   readTime: string;
   category: CategorySlug;
+  storyType: StoryType;
   tags: string[];
   heroImage: string;
   heroAlt: string;
@@ -71,6 +113,7 @@ type ArticleFrontmatter = {
 
 export type ArticleSummary = ArticleFrontmatter & {
   categoryLabel: string;
+  publishedLabel: string;
 };
 
 export type ArticleEntry = {
@@ -87,6 +130,20 @@ export type ArticleSection = {
 
 function isCategorySlug(value: string): value is CategorySlug {
   return categories.some((category) => category.slug === value);
+}
+
+function isStoryType(value: string): value is StoryType {
+  return storyTypes.some((storyType) => storyType.label === value);
+}
+
+function getStoryType(storyTypeLabel: StoryType) {
+  const storyType = storyTypes.find((item) => item.label === storyTypeLabel);
+
+  if (!storyType) {
+    throw new Error(`Unknown story type: ${storyTypeLabel}`);
+  }
+
+  return storyType;
 }
 
 function getCategory(slug: CategorySlug) {
@@ -111,12 +168,22 @@ function normalizeFrontmatter(
     throw new Error(`Invalid category in ${fileSlug}.mdx`);
   }
 
+  if (!source.storyType || !isStoryType(source.storyType)) {
+    throw new Error(`Invalid storyType in ${fileSlug}.mdx`);
+  }
+
   if (!source.heroImage || !source.heroAlt) {
     throw new Error(`Missing hero image fields in ${fileSlug}.mdx`);
   }
 
   const slug = source.slug ?? fileSlug;
   const category = getCategory(source.category);
+  const publishedDate = new Date(source.publishedAt);
+  const publishedLabel = new Intl.DateTimeFormat("es-ES", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(publishedDate);
 
   return {
     title: source.title,
@@ -125,12 +192,14 @@ function normalizeFrontmatter(
     publishedAt: source.publishedAt,
     readTime: source.readTime,
     category: source.category,
+    storyType: source.storyType,
     tags: source.tags ?? [],
     heroImage: source.heroImage,
     heroAlt: source.heroAlt,
     relatedSlugs: source.relatedSlugs ?? [],
     featured: source.featured ?? false,
     categoryLabel: category.label,
+    publishedLabel,
   };
 }
 
@@ -189,6 +258,15 @@ export const getArticlesByCategory = cache(
   async (categorySlug: CategorySlug, limit?: number) => {
     const articles = await getAllArticles();
     const matches = articles.filter((article) => article.category === categorySlug);
+
+    return typeof limit === "number" ? matches.slice(0, limit) : matches;
+  },
+);
+
+export const getArticlesByStoryType = cache(
+  async (storyType: StoryType, limit?: number) => {
+    const articles = await getAllArticles();
+    const matches = articles.filter((article) => article.storyType === storyType);
 
     return typeof limit === "number" ? matches.slice(0, limit) : matches;
   },
@@ -254,4 +332,16 @@ export function getCategoryFromSlug(slug: string) {
   }
 
   return getCategory(slug);
+}
+
+export function getStoryTypeFromSlug(slug: string) {
+  if (slug === "icono") {
+    return storyTypes.find((storyType) => storyType.slug === "iconos") ?? null;
+  }
+
+  return storyTypes.find((storyType) => storyType.slug === slug) ?? null;
+}
+
+export function getStoryTypeFromLabel(storyTypeLabel: StoryType) {
+  return getStoryType(storyTypeLabel);
 }

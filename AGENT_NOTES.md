@@ -67,3 +67,29 @@
 - For a stronger page break, the logo lockup can sit centered with a simple black divider line directly beneath the shared header.
 - The perceived logo misalignment came from asymmetric transparent padding inside `logo.png`; adding a tiny image-level horizontal offset (`-0.6%`) produces true visual centering while preserving layout centering.
 - Header dividers should use `var(--line)` to stay visually aligned with container card borders instead of introducing a separate black rule.
+- For navigation expansion, keeping the header as a server component works well because it can derive menu destinations from the content model while delegating only the interactive dropdown behavior to a small client component.
+- In the current IA, `Archivo` is redundant if it only repeats category browsing; keep header navigation focused on distinct intents such as taxonomy (`Explorar`) and editorial groupings (`Lecturas`).
+- Title-system note: once the site has a few strong headline shapes, avoid slipping back into repeated `X: Y` or `de X a Y` constructions; headline variety is part of the editorial identity, not just copy polish.
+- The same applies to `<subject> y ...` headlines: once they recur, they stop feeling like real titles and start reading like a formula.
+- For menswear review requests, the strongest critiques should separate factual overstatement from merely vague prose: verify career chronology and stated influence, then judge whether the article teaches through garment, cloth, or silhouette detail.
+
+## 2026-03-13
+
+- For menswear review requests, the strongest editorial feedback distinguishes clearly between factual error and historical compression; concise findings with quoted passage references are more useful than broad prose notes.
+
+## 2026-03-13
+
+- For menswear review tasks, the strongest output comes from separating factual exposure from editorial thinness: some claims are not outright wrong, but they are compressed enough that they weaken trust and educational value.
+- On denim topics, a quick check against primary or near-primary sources such as Levi's history material and Kurabo's company history is enough to flag when copy overstates mining, compresses chronology, or treats Japanese reproduction culture as a single undifferentiated move.
+
+## 2026-03-14
+
+- When generating a large article batch in parallel, preserve a single explicit publication-date schedule and reconcile it after the worker wave finishes; missing one file is less risky than silently leaving duplicate dates in the sequence.
+- The site needs one global chronological archive route separate from category browsing; otherwise older stories become effectively undiscoverable once they fall off the homepage.
+- Some recent article-image failures came from brittle Unsplash URL assumptions. Prefer direct `images.unsplash.com` URLs with stable IDs over looser Unsplash page or download links, which have been the source of several broken images.
+- For educational fabric pieces in Spanish, avoid leaving core textile categories in English when a natural Spanish term exists; proper names like Supima or FoxFibre can stay, but the explanatory language should remain fully Spanish.
+- On western and rodeo pieces, avoid flattening every trouser with room for a boot into a theatrical campana; often the more precise description is a recta or semi-recta pierna with enough apertura for bota.
+- On brand-origin garments, the strongest menswear writing attributes contested origin stories to the brand or other named sources instead of presenting lore as courtroom fact.
+- For cross-site editorial improvement passes, the safest gains come from adding one concrete historical or material qualifier at a time; small precision edits preserve cadence better than "improving" by rewriting whole paragraphs.
+- When adding a second editorial taxonomy to the articles, keep it separate from the thematic `category`; a dedicated `storyType` frontmatter field avoids overloading the existing content model and leaves the UI free to adopt it later.
+- When a second navigation axis is introduced, keep the existing thematic menu intact and add a separate entrypoint for the editorial taxonomy; in this site, `Estilos` and `Explorar` should stay distinct because they answer different browsing questions.
