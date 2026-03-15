@@ -121,7 +121,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
           <div>
             <p className="eyebrow">Lecturas relacionadas</p>
             <h2 className="mt-2 font-display text-5xl leading-none tracking-[-0.05em]">
-              Seguir el hilo
+              Sigue el hilo ...
             </h2>
           </div>
         </div>
