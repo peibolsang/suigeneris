@@ -34,8 +34,8 @@ export type ArticleCatalogEntry = {
   excerpt: string;
   publishedAt: string;
   publishedLabel: string;
-  category: CategorySlug;
-  categoryLabel: string;
+  category: CategorySlug | null;
+  categoryLabel: string | null;
   storyType: StoryType;
   heroImage: string;
   heroAlt: string;
@@ -80,8 +80,8 @@ function toArticleCatalogEntry(article: ArticleManifestEntry): ArticleCatalogEnt
     excerpt: article.excerpt,
     publishedAt: article.publishedAt,
     publishedLabel: article.publishedLabel,
-    category: article.category,
-    categoryLabel: article.categoryLabel,
+  category: article.category,
+  categoryLabel: article.categoryLabel,
     storyType: article.storyType,
     heroImage: article.heroImage,
     heroAlt: article.heroAlt,

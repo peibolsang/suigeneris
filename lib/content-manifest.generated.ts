@@ -208,8 +208,8 @@ export const contentManifest = {
       "publishedAt": "2026-03-07",
       "publishedLabel": "7 mar 2026",
       "readTime": "11 min",
-      "category": "workwear",
-      "categoryLabel": "Workwear",
+      "category": null,
+      "categoryLabel": null,
       "storyType": "Lo Básico",
       "tags": [
         "Algodón",
@@ -568,8 +568,8 @@ export const contentManifest = {
       "publishedAt": "2026-01-15",
       "publishedLabel": "15 ene 2026",
       "readTime": "10 min",
-      "category": "workwear",
-      "categoryLabel": "Workwear",
+      "category": null,
+      "categoryLabel": null,
       "storyType": "Variantes",
       "tags": [
         "Denim",
@@ -1232,11 +1232,11 @@ export const contentManifest = {
       "publishedAt": "2025-12-16",
       "publishedLabel": "16 dic 2025",
       "readTime": "8 min",
-      "category": "elevated-casual",
-      "categoryLabel": "Elevated Casual",
+      "category": "ivy",
+      "categoryLabel": "Ivy",
       "storyType": "Iconos",
       "tags": [
-        "Elevated Casual",
+        "Ivy",
         "McGregor",
         "Drizzler",
         "Eisenhower Jacket"
@@ -1555,9 +1555,7 @@ export const contentManifest = {
       "carpenter-chef-painter-fatigue-pierna-recta",
       "sashiko-reparacion-textil-y-menswear",
       "chore-coat-workwear-fundacional",
-      "algodon-fibra-larga-origen-calidad",
-      "chambray-y-fatiga",
-      "algodon-sarga-denim-canvas-duck-chambray"
+      "chambray-y-fatiga"
     ],
     "vintage-americana": [
       "denim-japones-y-mito-americano",
@@ -1581,11 +1579,11 @@ export const contentManifest = {
       "camisetas-loopwheeled-merz-whitesville",
       "donegal-tweed-neps-y-cultura-textil",
       "tartanes-de-casas-barbour-baracuta-y-otras",
-      "mcgregor-drizzler-eisenhower",
       "rl67-jacket-importancia-menswear"
     ],
     "ivy": [
-      "ivy-ocbd-y-loafers"
+      "ivy-ocbd-y-loafers",
+      "mcgregor-drizzler-eisenhower"
     ]
   },
   "articlesByStoryType": {

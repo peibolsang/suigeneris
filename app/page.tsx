@@ -18,6 +18,12 @@ function isPopularArticle(
   return typeof (article as PopularArticle).popularRank === "number";
 }
 
+function hasCategoryLabel(
+  article: ArticleCatalogEntry | PopularArticle,
+): article is (ArticleCatalogEntry | PopularArticle) & { categoryLabel: string } {
+  return Boolean(article.categoryLabel);
+}
+
 export default async function Home() {
   const [{ featuredArticle, latestArticles, leadArticles, categoryRows }, popularArticles] =
     await Promise.all([
@@ -64,10 +70,14 @@ export default async function Home() {
             <div className="px-5 pb-5 md:px-6 md:pb-6">
               <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.24em] text-[var(--muted)]">
                 <span>{featuredArticle.publishedLabel}</span>
-                <span aria-hidden="true">•</span>
-                <span className="font-sans text-[var(--accent)]">
-                  {featuredArticle.categoryLabel}
-                </span>
+                {hasCategoryLabel(featuredArticle) ? (
+                  <>
+                    <span aria-hidden="true">•</span>
+                    <span className="font-sans text-[var(--accent)]">
+                      {featuredArticle.categoryLabel}
+                    </span>
+                  </>
+                ) : null}
               </div>
               <Link
                 href={`/articulos/${featuredArticle.slug}`}
@@ -115,10 +125,14 @@ export default async function Home() {
                       </>
                     ) : null}
                     <span>{article.publishedLabel}</span>
-                    <span aria-hidden="true">•</span>
-                    <span className="font-sans text-[var(--accent)]">
-                      {article.categoryLabel}
-                    </span>
+                    {hasCategoryLabel(article) ? (
+                      <>
+                        <span aria-hidden="true">•</span>
+                        <span className="font-sans text-[var(--accent)]">
+                          {article.categoryLabel}
+                        </span>
+                      </>
+                    ) : null}
                   </div>
                   <Link
                     href={`/articulos/${article.slug}`}

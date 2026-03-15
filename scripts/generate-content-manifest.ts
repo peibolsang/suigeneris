@@ -26,8 +26,8 @@ type ArticleManifestEntry = {
   publishedAt: string;
   publishedLabel: string;
   readTime: string;
-  category: CategorySlug;
-  categoryLabel: string;
+  category: CategorySlug | null;
+  categoryLabel: string | null;
   storyType: StoryType;
   tags: string[];
   heroImage: string;
@@ -100,8 +100,8 @@ function normalizeFrontmatter(
   }
 
   if (
-    typeof frontmatter.category !== "string" ||
-    !isCategorySlug(frontmatter.category)
+    typeof frontmatter.category !== "undefined" &&
+    (typeof frontmatter.category !== "string" || !isCategorySlug(frontmatter.category))
   ) {
     throw new Error(`Invalid category in ${fileSlug}.mdx`);
   }
@@ -126,9 +126,12 @@ function normalizeFrontmatter(
     throw new Error(`Missing popularityId in ${fileSlug}.mdx`);
   }
 
-  const category = getCategoryBySlug(frontmatter.category);
+  const category =
+    typeof frontmatter.category === "string"
+      ? getCategoryBySlug(frontmatter.category)
+      : null;
 
-  if (!category) {
+  if (typeof frontmatter.category === "string" && !category) {
     throw new Error(`Unknown category in ${fileSlug}.mdx`);
   }
 
@@ -149,8 +152,8 @@ function normalizeFrontmatter(
     publishedAt: frontmatter.publishedAt,
     publishedLabel: formatPublishedLabel(frontmatter.publishedAt),
     readTime: frontmatter.readTime,
-    category: frontmatter.category,
-    categoryLabel: category.label,
+    category: category?.slug ?? null,
+    categoryLabel: category?.label ?? null,
     storyType: frontmatter.storyType,
     tags,
     heroImage: frontmatter.heroImage,
@@ -205,14 +208,16 @@ async function buildManifest() {
         ? entry.relatedSlugs.filter(
             (relatedSlug) => relatedSlug !== entry.slug && entryBySlug.has(relatedSlug),
           )
-        : sortedEntries
+        : entry.category
+          ? sortedEntries
             .filter(
               (candidate) =>
                 candidate.slug !== entry.slug &&
                 candidate.category === entry.category,
             )
             .slice(0, 3)
-            .map((candidate) => candidate.slug);
+            .map((candidate) => candidate.slug)
+          : [];
 
     entry.resolvedRelatedSlugs = resolvedRelatedSlugs;
   }

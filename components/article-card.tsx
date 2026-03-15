@@ -14,6 +14,8 @@ export function ArticleCard({
   priority = false,
   variant = "stacked",
 }: ArticleCardProps) {
+  const hasCategory = Boolean(article.categoryLabel);
+
   if (variant === "featured") {
     return (
       <article className="group">
@@ -29,9 +31,11 @@ export function ArticleCard({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[rgba(18,12,7,0.78)] via-transparent to-[rgba(255,250,244,0.06)]" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-[rgba(255,245,235,0.96)] sm:p-6">
-              <p className="font-sans text-[0.72rem] uppercase tracking-[0.28em] text-[rgba(255,221,194,0.8)]">
-                {article.categoryLabel}
-              </p>
+              {hasCategory ? (
+                <p className="font-sans text-[0.72rem] uppercase tracking-[0.28em] text-[rgba(255,221,194,0.8)]">
+                  {article.categoryLabel}
+                </p>
+              ) : null}
               <h2 className="mt-3 max-w-2xl font-display text-5xl leading-[0.88] tracking-[-0.05em] text-balance sm:text-6xl">
                 {article.title}
               </h2>
@@ -60,10 +64,14 @@ export function ArticleCard({
         <div className="flex flex-1 flex-col">
           <p className="font-sans text-[0.72rem] uppercase tracking-[0.24em] text-[var(--muted)]">
             <span>{article.publishedLabel}</span>
-            <span aria-hidden="true" className="mx-2 text-[var(--muted)]">
-              •
-            </span>
-            <span className="text-[var(--accent)]">{article.categoryLabel}</span>
+            {hasCategory ? (
+              <>
+                <span aria-hidden="true" className="mx-2 text-[var(--muted)]">
+                  •
+                </span>
+                <span className="text-[var(--accent)]">{article.categoryLabel}</span>
+              </>
+            ) : null}
           </p>
           <Link
             href={`/articulos/${article.slug}`}
@@ -102,8 +110,12 @@ export function ArticleCard({
       </div>
       <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
         <span>{article.publishedLabel}</span>
-        <span aria-hidden="true">•</span>
-        <span className="font-sans text-[var(--accent)]">{article.categoryLabel}</span>
+        {hasCategory ? (
+          <>
+            <span aria-hidden="true">•</span>
+            <span className="font-sans text-[var(--accent)]">{article.categoryLabel}</span>
+          </>
+        ) : null}
       </div>
       <div className="flex flex-1 flex-col">
         <Link

@@ -12,6 +12,8 @@ export function ArchiveStoryRow({
   article,
   priority = false,
 }: ArchiveStoryRowProps) {
+  const hasCategory = Boolean(article.categoryLabel);
+
   return (
     <article className="archive-row group grid gap-5 py-5 lg:grid-cols-[minmax(280px,0.9fr)_minmax(0,1.1fr)] lg:gap-8">
       <div className="relative aspect-[1.28/0.86] overflow-hidden bg-white">
@@ -28,8 +30,12 @@ export function ArchiveStoryRow({
       <div className="flex flex-col justify-center">
         <div className="flex items-center gap-3 font-sans text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
           <span>{article.publishedLabel}</span>
-          <span aria-hidden="true">•</span>
-          <span className="text-[var(--accent)]">{article.categoryLabel}</span>
+          {hasCategory ? (
+            <>
+              <span aria-hidden="true">•</span>
+              <span className="text-[var(--accent)]">{article.categoryLabel}</span>
+            </>
+          ) : null}
         </div>
 
         <Link
