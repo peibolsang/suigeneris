@@ -5,7 +5,7 @@ import { ArticleToc } from "@/components/article-toc";
 import { ArticleViewTracker } from "@/components/article-view-tracker";
 import {
   createArticleTrackingToken,
-  getArticlePopularitySnapshot,
+  type PopularitySnapshot,
 } from "@/lib/article-popularity";
 import {
   formatDate,
@@ -13,6 +13,9 @@ import {
   getArticleBySlug,
   getRelatedArticles,
 } from "@/lib/content";
+
+export const dynamic = "force-static";
+export const dynamicParams = false;
 
 type ArticlePageProps = {
   params: Promise<{
@@ -58,11 +61,21 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const [relatedArticles, popularitySnapshot] = await Promise.all([
-    getRelatedArticles(article.metadata),
-    getArticlePopularitySnapshot(article.metadata.popularityId),
-  ]);
+  const relatedArticles = await getRelatedArticles(article.metadata);
   const trackingToken = createArticleTrackingToken(article.metadata.popularityId);
+  const popularitySnapshot: PopularitySnapshot = trackingToken
+    ? {
+        enabled: true,
+        tracked: false,
+        popularRank: null,
+        isPopular: false,
+      }
+    : {
+        enabled: false,
+        tracked: false,
+        popularRank: null,
+        isPopular: false,
+      };
 
   return (
     <main className="pb-16 pt-8">

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ArchiveStoryRow } from "@/components/archive-story-row";
 import { getAllArticles } from "@/lib/content";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: "Lecturas",
   description:

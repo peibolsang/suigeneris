@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { StoryTypeRow } from "@/components/story-type-row";
-import { getAllArticles, storyTypes } from "@/lib/content";
+import { getStoryTypeSummaries } from "@/lib/content";
+
+export const dynamic = "force-static";
 
 export const metadata: Metadata = {
   title: "Explorar",
@@ -9,12 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ExplorePage() {
-  const articles = await getAllArticles();
-  const storyTypeSummaries = storyTypes.map((storyType) => ({
-    ...storyType,
-    articleCount: articles.filter((article) => article.storyType === storyType.label)
-      .length,
-  }));
+  const storyTypeSummaries = await getStoryTypeSummaries();
 
   return (
     <main className="pb-12 pt-8">

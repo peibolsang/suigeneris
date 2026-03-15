@@ -1,11 +1,11 @@
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { ArticleCard } from "@/components/article-card";
-import type { ArticleSummary, Category } from "@/lib/content";
+import type { ArticleCatalogEntry, Category } from "@/lib/content";
 
 type CategoryFeatureProps = {
   category: Category;
-  articles: ArticleSummary[];
+  articles: ArticleCatalogEntry[];
 };
 
 export function CategoryFeature({

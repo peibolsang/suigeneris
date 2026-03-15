@@ -7,6 +7,9 @@ import {
   getCategoryFromSlug,
 } from "@/lib/content";
 
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
 type CategoryPageProps = {
   params: Promise<{
     slug: string;

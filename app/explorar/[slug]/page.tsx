@@ -7,6 +7,9 @@ import {
   storyTypes,
 } from "@/lib/content";
 
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
 type StoryTypePageProps = {
   params: Promise<{
     slug: string;

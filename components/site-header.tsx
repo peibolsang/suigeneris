@@ -2,13 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   categories,
-  getFeaturedArticle,
+  getFeaturedArticleSlug,
   storyTypes,
 } from "@/lib/content";
 import { SiteNavigation } from "@/components/site-navigation";
 
 export async function SiteHeader() {
-  const featuredArticle = await getFeaturedArticle();
+  const featuredArticleSlug = await getFeaturedArticleSlug();
   const categoryLinks = categories.map((category) => ({
     label: category.label,
     href: `/categorias/${category.slug}`,
@@ -35,7 +35,7 @@ export async function SiteHeader() {
         },
         {
           label: "Destacada",
-          href: featuredArticle ? `/articulos/${featuredArticle.slug}` : "/",
+          href: featuredArticleSlug ? `/articulos/${featuredArticleSlug}` : "/",
         },
         {
           label: "Lo último",

@@ -10,7 +10,7 @@ type ArticleSection = {
 };
 
 type ArticleTocProps = {
-  sections: ArticleSection[];
+  sections: readonly ArticleSection[];
 };
 
 export function ArticleToc({ sections }: ArticleTocProps) {

@@ -1,12 +1,11 @@
 import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { unstable_cache } from "next/cache";
 import { createClient, type RedisClientType } from "redis";
-import { getAllArticles, type ArticleSummary } from "@/lib/content";
+import { getArticleCatalog, type ArticleCatalogEntry } from "@/lib/content";
 
 const POPULAR_ARTICLE_LIMIT = 3;
 const POPULARITY_REVALIDATE_SECONDS = 300;
 const VIEW_COOLDOWN_MS = 30 * 60 * 1000;
-const TRACKING_TOKEN_TTL_MS = 15 * 60 * 1000;
 const LOCAL_TRACKING_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"];
 const botUserAgentPattern =
   /bot|crawler|spider|crawling|headless|preview|slurp|facebookexternalhit|bingpreview|embedly|quora link preview|ia_archiver|whatsapp|discordbot|slackbot|telegrambot/i;
@@ -32,7 +31,7 @@ export type PopularitySnapshot = {
   isPopular: boolean;
 };
 
-export type PopularArticle = ArticleSummary & {
+export type PopularArticle = ArticleCatalogEntry & {
   viewCount: number;
   popularRank: number;
 };
@@ -113,7 +112,13 @@ async function getRedisClient() {
   }
 
   if (!redisClient) {
-    redisClient = createClient({ url });
+    redisClient = createClient({
+      url,
+      socket: {
+        connectTimeout: 1500,
+        reconnectStrategy: false,
+      },
+    });
     redisClient.on("error", () => {
       resetRedisClient();
     });
@@ -152,7 +157,7 @@ function getRankingKey() {
 }
 
 function rankArticles(
-  articles: ArticleSummary[],
+  articles: ArticleCatalogEntry[],
   records: PopularityRecord[],
 ): PopularArticle[] {
   const viewCountByArticleId = new Map(
@@ -190,7 +195,7 @@ async function readPopularityRecords() {
 const getCachedPopularArticleRankings = unstable_cache(
   async () => {
     const [articles, records] = await Promise.all([
-      getAllArticles(),
+      getArticleCatalog(),
       readPopularityRecords(),
     ]);
 
@@ -280,7 +285,7 @@ function getClientFingerprint(ipAddress: string, userAgent: string | null) {
     .digest("hex");
 }
 
-function signTrackingMessage(articleId: string, expiresAt: number) {
+function signTrackingMessage(articleId: string) {
   const secret = getPopularityTrackingSecret();
 
   if (!secret) {
@@ -288,36 +293,22 @@ function signTrackingMessage(articleId: string, expiresAt: number) {
   }
 
   return createHmac("sha256", secret)
-    .update(`${articleId}:${expiresAt}`)
+    .update(articleId)
     .digest("hex");
 }
 
 export function createArticleTrackingToken(articleId: string) {
-  const expiresAt = Date.now() + TRACKING_TOKEN_TTL_MS;
-  const signature = signTrackingMessage(articleId, expiresAt);
-
-  if (!signature) {
-    return null;
-  }
-
-  return `${expiresAt}.${signature}`;
+  return signTrackingMessage(articleId);
 }
 
 export function verifyArticleTrackingToken(articleId: string, token: string) {
-  const [expiresAtRaw, signature] = token.split(".");
-  const expiresAt = Number(expiresAtRaw);
-  const expectedSignature = signTrackingMessage(articleId, expiresAt);
+  const expectedSignature = signTrackingMessage(articleId);
 
-  if (
-    !signature ||
-    !expectedSignature ||
-    !Number.isFinite(expiresAt) ||
-    expiresAt <= Date.now()
-  ) {
+  if (!token || !expectedSignature) {
     return false;
   }
 
-  const providedSignature = Buffer.from(signature, "utf8");
+  const providedSignature = Buffer.from(token, "utf8");
   const expectedSignatureBuffer = Buffer.from(expectedSignature, "utf8");
 
   if (providedSignature.length !== expectedSignatureBuffer.length) {
@@ -384,7 +375,7 @@ export function shouldTrackArticleViewRequest(input: {
 }
 
 export async function getPopularityCatalog() {
-  const articles = await getAllArticles();
+  const articles = await getArticleCatalog();
 
   return new Map(articles.map((article) => [article.popularityId, article]));
 }
@@ -401,7 +392,7 @@ export async function getArticlePopularitySnapshot(
   articleId: string,
 ): Promise<PopularitySnapshot> {
   const [articles, records] = await Promise.all([
-    getAllArticles(),
+    getArticleCatalog(),
     readPopularityRecords(),
   ]);
 

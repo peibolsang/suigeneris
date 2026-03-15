@@ -5,137 +5,21 @@ import matter from "gray-matter";
 import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { mdxComponents } from "@/components/mdx/mdx-components";
-import { slugify } from "@/lib/slugify";
+import { contentManifest } from "@/lib/content-manifest.generated";
+import {
+  categories,
+  getCategoryBySlug,
+  getStoryTypeByLabel,
+  getStoryTypeBySlug,
+  storyTypes,
+  type Category,
+  type CategorySlug,
+  type StoryType,
+  type StoryTypeSlug,
+} from "@/lib/content-taxonomy";
 
-const contentDirectory = path.join(process.cwd(), "content", "articles");
-
-export const categories = [
-  {
-    slug: "workwear",
-    label: "Workwear",
-    navLabel: "Workwear",
-    kicker: "Origen utilitario",
-    description:
-      "Chaquetas de faena, denim, botas, chambray y el imaginario industrial que todavía estructura buena parte del menswear.",
-  },
-  {
-    slug: "vintage-americana",
-    label: "Vintage Americana",
-    navLabel: "Americana",
-    kicker: "Archivo americano",
-    description:
-      "De la iconografía del Oeste al denim japonés, una lectura del mito americano y sus reinterpretaciones contemporáneas.",
-  },
-  {
-    slug: "military-heritage",
-    label: "Military Heritage",
-    navLabel: "Militaria",
-    kicker: "Rastro militar",
-    description:
-      "Prendas nacidas para la función que acabaron definiendo códigos de estilo civil: parkas, chinos, flight jackets y más.",
-  },
-  {
-    slug: "elevated-casual",
-    label: "Elevated Casual",
-    navLabel: "Elevated Casual",
-    kicker: "Casual afinado",
-    description:
-      "El terreno donde conviven Aaron Levine, el sportswear civilizado y una noción más madura de la ropa cotidiana.",
-  },
-  {
-    slug: "ivy",
-    label: "Ivy",
-    navLabel: "Ivy",
-    kicker: "Tradición colegial",
-    description:
-      "Soft tailoring, mocasines, oxford cloth y el largo viaje de un uniforme universitario convertido en lenguaje global.",
-  },
-] as const;
-
-export type Category = (typeof categories)[number];
-export type CategorySlug = Category["slug"];
-export const storyTypes = [
-  {
-    slug: "lo-basico",
-    label: "Lo Básico",
-    description:
-      "Puertas de entrada para entender una prenda, un tejido o un lenguaje del menswear desde sus ideas esenciales.",
-  },
-  {
-    slug: "historia",
-    label: "Historia",
-    description:
-      "Piezas donde el arco principal pasa por el origen, la evolución y la vida cultural de una prenda, marca o material.",
-  },
-  {
-    slug: "variantes",
-    label: "Variantes",
-    description:
-      "Artículos que ordenan familias cercanas y enseñan a distinguir versiones, ramas y diferencias que suelen mezclarse.",
-  },
-  {
-    slug: "iconos",
-    label: "Iconos",
-    description:
-      "Perfiles de prendas, modelos, tejidos y objetos que siguen importando por su forma, su lógica y su peso cultural.",
-  },
-  {
-    slug: "como-llevarlo",
-    label: "Cómo llevarlo",
-    description:
-      "Lecturas orientadas al uso real: combinaciones, equilibrio visual y criterios para integrar una pieza en el armario.",
-  },
-  {
-    slug: "opinion",
-    label: "Opinión",
-    description:
-      "Textos donde manda una tesis editorial clara sobre gusto, método o cultura material dentro del menswear.",
-  },
-] as const;
-
-export type StoryType = (typeof storyTypes)[number]["label"];
-export type StoryTypeSlug = (typeof storyTypes)[number]["slug"];
-
-type ArticleFrontmatter = {
-  title: string;
-  slug: string;
-  popularityId: string;
-  excerpt: string;
-  publishedAt: string;
-  readTime: string;
-  category: CategorySlug;
-  storyType: StoryType;
-  tags: string[];
-  heroImage: string;
-  heroAlt: string;
-  relatedSlugs: string[];
-  featured?: boolean;
-};
-
-export type ArticleSummary = ArticleFrontmatter & {
-  categoryLabel: string;
-  publishedLabel: string;
-};
-
-export type ArticleCatalogEntry = Pick<
-  ArticleSummary,
-  | "popularityId"
-  | "slug"
-  | "title"
-  | "publishedAt"
-  | "publishedLabel"
-  | "excerpt"
-  | "heroImage"
-  | "heroAlt"
-  | "category"
-  | "categoryLabel"
->;
-
-export type ArticleEntry = {
-  metadata: ArticleSummary;
-  content: React.ReactNode;
-  sections: ArticleSection[];
-};
+export { categories, storyTypes };
+export type { Category, CategorySlug, StoryType, StoryTypeSlug };
 
 export type ArticleSection = {
   id: string;
@@ -143,157 +27,166 @@ export type ArticleSection = {
   level: 2 | 3;
 };
 
-function isCategorySlug(value: string): value is CategorySlug {
-  return categories.some((category) => category.slug === value);
-}
+export type ArticleCatalogEntry = {
+  slug: string;
+  popularityId: string;
+  title: string;
+  excerpt: string;
+  publishedAt: string;
+  publishedLabel: string;
+  category: CategorySlug;
+  categoryLabel: string;
+  storyType: StoryType;
+  heroImage: string;
+  heroAlt: string;
+  featured: boolean;
+};
 
-function isStoryType(value: string): value is StoryType {
-  return storyTypes.some((storyType) => storyType.label === value);
-}
+export type ArticleSummary = ArticleCatalogEntry & {
+  readTime: string;
+  tags: readonly string[];
+  relatedSlugs: readonly string[];
+};
 
-function getStoryType(storyTypeLabel: StoryType) {
-  const storyType = storyTypes.find((item) => item.label === storyTypeLabel);
+type ArticleManifestEntry = ArticleSummary & {
+  sections: readonly ArticleSection[];
+  resolvedRelatedSlugs: readonly string[];
+  sourcePath: string;
+};
 
-  if (!storyType) {
-    throw new Error(`Unknown story type: ${storyTypeLabel}`);
-  }
+export type ArticleEntry = {
+  metadata: ArticleSummary;
+  content: React.ReactNode;
+  sections: readonly ArticleSection[];
+};
 
-  return storyType;
-}
+type ManifestShape = {
+  allArticleSlugs: readonly string[];
+  latestArticleSlugs: readonly string[];
+  featuredArticleSlug: string | null;
+  articleBySlug: Record<string, ArticleManifestEntry>;
+  articleByPopularityId: Record<string, string>;
+  articlesByCategory: Record<string, readonly string[]>;
+  articlesByStoryType: Record<string, readonly string[]>;
+};
 
-function getCategory(slug: CategorySlug) {
-  const category = categories.find((item) => item.slug === slug);
+const manifest = contentManifest as unknown as ManifestShape;
 
-  if (!category) {
-    throw new Error(`Unknown category slug: ${slug}`);
-  }
-
-  return category;
-}
-
-function normalizeFrontmatter(
-  source: Partial<ArticleFrontmatter>,
-  fileSlug: string,
-): ArticleSummary {
-  if (!source.title || !source.excerpt || !source.publishedAt || !source.readTime) {
-    throw new Error(`Missing required frontmatter in ${fileSlug}.mdx`);
-  }
-
-  if (!source.category || !isCategorySlug(source.category)) {
-    throw new Error(`Invalid category in ${fileSlug}.mdx`);
-  }
-
-  if (!source.storyType || !isStoryType(source.storyType)) {
-    throw new Error(`Invalid storyType in ${fileSlug}.mdx`);
-  }
-
-  if (!source.heroImage || !source.heroAlt) {
-    throw new Error(`Missing hero image fields in ${fileSlug}.mdx`);
-  }
-
-  const slug = source.slug ?? fileSlug;
-  const popularityId = source.popularityId?.trim();
-
-  if (!popularityId) {
-    throw new Error(`Missing popularityId in ${fileSlug}.mdx`);
-  }
-
-  const category = getCategory(source.category);
-  const publishedDate = new Date(source.publishedAt);
-  const publishedLabel = new Intl.DateTimeFormat("es-ES", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(publishedDate);
-
+function toArticleCatalogEntry(article: ArticleManifestEntry): ArticleCatalogEntry {
   return {
-    title: source.title,
-    slug,
-    popularityId,
-    excerpt: source.excerpt,
-    publishedAt: source.publishedAt,
-    readTime: source.readTime,
-    category: source.category,
-    storyType: source.storyType,
-    tags: source.tags ?? [],
-    heroImage: source.heroImage,
-    heroAlt: source.heroAlt,
-    relatedSlugs: source.relatedSlugs ?? [],
-    featured: source.featured ?? false,
-    categoryLabel: category.label,
-    publishedLabel,
+    slug: article.slug,
+    popularityId: article.popularityId,
+    title: article.title,
+    excerpt: article.excerpt,
+    publishedAt: article.publishedAt,
+    publishedLabel: article.publishedLabel,
+    category: article.category,
+    categoryLabel: article.categoryLabel,
+    storyType: article.storyType,
+    heroImage: article.heroImage,
+    heroAlt: article.heroAlt,
+    featured: article.featured,
   };
 }
 
-function assertUniquePopularityIds(articles: ArticleSummary[]) {
-  const seenIds = new Set<string>();
+const articleEntriesBySlug = Object.fromEntries(
+  Object.entries(manifest.articleBySlug).map(([slug, article]) => [
+    slug,
+    article as ArticleManifestEntry,
+  ]),
+) as Record<string, ArticleManifestEntry>;
 
-  for (const article of articles) {
-    if (seenIds.has(article.popularityId)) {
-      throw new Error(`Duplicate popularityId detected: ${article.popularityId}`);
-    }
+const allArticleEntries = manifest.allArticleSlugs.map((slug) => {
+  const article = articleEntriesBySlug[slug];
 
-    seenIds.add(article.popularityId);
+  if (!article) {
+    throw new Error(`Unknown article slug in content manifest: ${slug}`);
   }
-}
 
-async function readSource(slug: string) {
-  return fs.readFile(path.join(contentDirectory, `${slug}.mdx`), "utf8");
-}
-
-function extractArticleSections(source: string): ArticleSection[] {
-  const { content } = matter(source);
-
-  return content
-    .split("\n")
-    .map((line) => line.match(/^(##|###)\s+(.+)$/))
-    .filter((match): match is RegExpMatchArray => Boolean(match))
-    .map((match) => ({
-      id: slugify(match[2].trim()),
-      title: match[2].trim(),
-      level: match[1].length as 2 | 3,
-    }));
-}
-
-export const getAllArticles = cache(async (): Promise<ArticleSummary[]> => {
-  const files = await fs.readdir(contentDirectory);
-
-  const articles = await Promise.all(
-    files
-      .filter((file) => file.endsWith(".mdx"))
-      .map(async (file) => {
-        const slug = file.replace(/\.mdx$/, "");
-        const source = await readSource(slug);
-        const { data } = matter(source);
-
-        return normalizeFrontmatter(data as Partial<ArticleFrontmatter>, slug);
-      }),
-  );
-
-  assertUniquePopularityIds(articles);
-
-  return articles.sort(
-    (left, right) =>
-      new Date(right.publishedAt).getTime() - new Date(left.publishedAt).getTime(),
-  );
+  return article;
 });
+
+const articleCatalog = allArticleEntries.map(toArticleCatalogEntry);
+const articleCatalogBySlug = Object.fromEntries(
+  articleCatalog.map((article) => [article.slug, article]),
+) as Record<string, ArticleCatalogEntry>;
+const articleCatalogByPopularityId = Object.fromEntries(
+  Object.entries(manifest.articleByPopularityId).map(([popularityId, slug]) => [
+    popularityId,
+    articleCatalogBySlug[slug],
+  ]),
+) as Record<string, ArticleCatalogEntry>;
+const latestArticleCatalog = manifest.latestArticleSlugs.map((slug) => {
+  const article = articleCatalogBySlug[slug];
+
+  if (!article) {
+    throw new Error(`Unknown latest article slug in content manifest: ${slug}`);
+  }
+
+  return article;
+});
+const articlesByCategory = Object.fromEntries(
+  categories.map((category) => [
+    category.slug,
+    (manifest.articlesByCategory[category.slug] ?? []).map((slug) => {
+      const article = articleCatalogBySlug[slug];
+
+      if (!article) {
+        throw new Error(`Unknown category article slug in content manifest: ${slug}`);
+      }
+
+      return article;
+    }),
+  ]),
+) as Record<CategorySlug, ArticleCatalogEntry[]>;
+const articlesByStoryType = Object.fromEntries(
+  storyTypes.map((storyType) => [
+    storyType.label,
+    (manifest.articlesByStoryType[storyType.label] ?? []).map((slug) => {
+      const article = articleCatalogBySlug[slug];
+
+      if (!article) {
+        throw new Error(`Unknown story type article slug in content manifest: ${slug}`);
+      }
+
+      return article;
+    }),
+  ]),
+) as Record<StoryType, ArticleCatalogEntry[]>;
+
+async function readArticleBodySource(sourcePath: string) {
+  const source = await fs.readFile(path.join(process.cwd(), sourcePath), "utf8");
+
+  return matter(source).content;
+}
+
+export const getAllArticles = cache(async (): Promise<ArticleCatalogEntry[]> => articleCatalog);
 
 export const getFeaturedArticle = cache(async () => {
-  const articles = await getAllArticles();
+  const fallbackArticle = articleCatalog[0];
 
-  return articles.find((article) => article.featured) ?? articles[0];
+  if (!fallbackArticle) {
+    throw new Error("Content manifest contains no articles.");
+  }
+
+  if (!manifest.featuredArticleSlug) {
+    return fallbackArticle;
+  }
+
+  return articleCatalogBySlug[manifest.featuredArticleSlug] ?? fallbackArticle;
 });
 
-export const getLatestArticles = cache(async (limit = 4) => {
-  const articles = await getAllArticles();
+export const getFeaturedArticleSlug = cache(
+  async () => manifest.featuredArticleSlug ?? articleCatalog[0]?.slug ?? null,
+);
 
-  return articles.slice(0, limit);
-});
+export const getLatestArticles = cache(
+  async (limit = 4): Promise<ArticleCatalogEntry[]> => latestArticleCatalog.slice(0, limit),
+);
 
 export const getArticlesByCategory = cache(
   async (categorySlug: CategorySlug, limit?: number) => {
-    const articles = await getAllArticles();
-    const matches = articles.filter((article) => article.category === categorySlug);
+    const matches = articlesByCategory[categorySlug] ?? [];
 
     return typeof limit === "number" ? matches.slice(0, limit) : matches;
   },
@@ -301,8 +194,7 @@ export const getArticlesByCategory = cache(
 
 export const getArticlesByStoryType = cache(
   async (storyType: StoryType, limit?: number) => {
-    const articles = await getAllArticles();
-    const matches = articles.filter((article) => article.storyType === storyType);
+    const matches = articlesByStoryType[storyType] ?? [];
 
     return typeof limit === "number" ? matches.slice(0, limit) : matches;
   },
@@ -310,14 +202,18 @@ export const getArticlesByStoryType = cache(
 
 export const getArticleBySlug = cache(
   async (slug: string): Promise<ArticleEntry | null> => {
+    const article = articleEntriesBySlug[slug];
+
+    if (!article) {
+      return null;
+    }
+
     try {
-      const source = await readSource(slug);
-      const sections = extractArticleSections(source);
-      const { content, frontmatter } = await compileMDX<Partial<ArticleFrontmatter>>({
+      const source = await readArticleBodySource(article.sourcePath);
+      const { content } = await compileMDX({
         source,
         components: mdxComponents,
         options: {
-          parseFrontmatter: true,
           mdxOptions: {
             remarkPlugins: [remarkGfm],
           },
@@ -325,9 +221,9 @@ export const getArticleBySlug = cache(
       });
 
       return {
-        metadata: normalizeFrontmatter(frontmatter, slug),
+        metadata: article,
         content,
-        sections,
+        sections: article.sections,
       };
     } catch {
       return null;
@@ -336,49 +232,53 @@ export const getArticleBySlug = cache(
 );
 
 export const getArticleByPopularityId = cache(
-  async (popularityId: string): Promise<ArticleSummary | null> => {
-    const articles = await getAllArticles();
-
-    return (
-      articles.find((article) => article.popularityId === popularityId) ?? null
-    );
-  },
+  async (popularityId: string): Promise<ArticleCatalogEntry | null> =>
+    articleCatalogByPopularityId[popularityId] ?? null,
 );
 
-export const getArticleCatalog = cache(async (): Promise<ArticleCatalogEntry[]> => {
-  const articles = await getAllArticles();
+export const getArticleCatalog = cache(
+  async (): Promise<ArticleCatalogEntry[]> => articleCatalog,
+);
 
-  return articles.map((article) => ({
-    popularityId: article.popularityId,
-    slug: article.slug,
-    title: article.title,
-    publishedAt: article.publishedAt,
-    publishedLabel: article.publishedLabel,
-    excerpt: article.excerpt,
-    heroImage: article.heroImage,
-    heroAlt: article.heroAlt,
-    category: article.category,
-    categoryLabel: article.categoryLabel,
+export const getStoryTypeSummaries = cache(async () =>
+  storyTypes.map((storyType) => ({
+    ...storyType,
+    articleCount: (manifest.articlesByStoryType[storyType.label] ?? []).length,
+  })),
+);
+
+export const getHomePageContent = cache(async () => {
+  const featuredArticle = await getFeaturedArticle();
+  const latestArticles = await getLatestArticles(4);
+  const leadArticles =
+    featuredArticle === null
+      ? latestArticles.slice(0, 3)
+      : latestArticles
+          .filter((article) => article.slug !== featuredArticle.slug)
+          .slice(0, 3);
+  const categoryRows = categories.map((category) => ({
+    category,
+    articles: (articlesByCategory[category.slug] ?? []).slice(0, 2),
   }));
+
+  return {
+    featuredArticle,
+    latestArticles,
+    leadArticles,
+    categoryRows,
+  };
 });
 
-export async function getRelatedArticles(article: ArticleSummary) {
-  const articles = await getAllArticles();
+export async function getRelatedArticles(article: Pick<ArticleSummary, "slug">) {
+  const manifestArticle = articleEntriesBySlug[article.slug];
 
-  const explicitRelated = article.relatedSlugs
-    .map((slug) => articles.find((candidate) => candidate.slug === slug))
-    .filter((candidate): candidate is ArticleSummary => Boolean(candidate));
-
-  if (explicitRelated.length > 0) {
-    return explicitRelated;
+  if (!manifestArticle) {
+    return [];
   }
 
-  return articles
-    .filter(
-      (candidate) =>
-        candidate.slug !== article.slug && candidate.category === article.category,
-    )
-    .slice(0, 3);
+  return manifestArticle.resolvedRelatedSlugs
+    .map((slug) => articleCatalogBySlug[slug] ?? null)
+    .filter((candidate): candidate is ArticleCatalogEntry => Boolean(candidate));
 }
 
 export function formatDate(date: string) {
@@ -390,21 +290,17 @@ export function formatDate(date: string) {
 }
 
 export function getCategoryFromSlug(slug: string) {
-  if (!isCategorySlug(slug)) {
+  if (!(categories as readonly Category[]).some((category) => category.slug === slug)) {
     return null;
   }
 
-  return getCategory(slug);
+  return getCategoryBySlug(slug as CategorySlug);
 }
 
 export function getStoryTypeFromSlug(slug: string) {
-  if (slug === "icono") {
-    return storyTypes.find((storyType) => storyType.slug === "iconos") ?? null;
-  }
-
-  return storyTypes.find((storyType) => storyType.slug === slug) ?? null;
+  return getStoryTypeBySlug(slug);
 }
 
 export function getStoryTypeFromLabel(storyTypeLabel: StoryType) {
-  return getStoryType(storyTypeLabel);
+  return getStoryTypeByLabel(storyTypeLabel);
 }

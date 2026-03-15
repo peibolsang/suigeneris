@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "node --import tsx scripts/generate-content-manifest.ts",
+    "prebuild": "node --import tsx scripts/generate-content-manifest.ts",
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "seed:popularity": "node --import tsx scripts/seed-popularity.ts"
   },
   "dependencies": {
     "@fontsource/playfair-display": "^5.2.8",

@@ -8,42 +8,37 @@ import {
   type PopularArticle,
 } from "@/lib/article-popularity";
 import {
-  getArticlesByCategory,
-  getFeaturedArticle,
-  getLatestArticles,
-  type ArticleSummary,
-  categories,
+  getHomePageContent,
+  type ArticleCatalogEntry,
 } from "@/lib/content";
 
-function isPopularArticle(article: ArticleSummary | PopularArticle): article is PopularArticle {
+function isPopularArticle(
+  article: ArticleCatalogEntry | PopularArticle,
+): article is PopularArticle {
   return typeof (article as PopularArticle).popularRank === "number";
 }
 
 export default async function Home() {
-  const [featuredArticle, latestArticles, popularArticles, categoryRows] =
+  const [{ featuredArticle, latestArticles, leadArticles, categoryRows }, popularArticles] =
     await Promise.all([
-      getFeaturedArticle(),
-      getLatestArticles(4),
+      getHomePageContent(),
       getPopularArticles(3),
-      Promise.all(
-        categories.map(async (category) => ({
-          category,
-          articles: await getArticlesByCategory(category.slug, 2),
-        })),
-      ),
     ]);
-  const leadArticles = latestArticles
+  const fallbackPopularArticles = leadArticles
     .filter((article) => article.slug !== featuredArticle.slug)
-    .slice(0, 3);
-  const fallbackPopularArticles = leadArticles.filter(
-    (article) =>
-      article.slug !== featuredArticle.slug &&
-      !popularArticles.some((popularArticle) => popularArticle.slug === article.slug),
-  );
-  const displayPopularArticles = [
+    .filter(
+      (article) =>
+        !popularArticles.some((popularArticle) => popularArticle.slug === article.slug),
+    );
+  const displayPopularArticles: Array<ArticleCatalogEntry | PopularArticle> = [
     ...popularArticles,
     ...fallbackPopularArticles,
-  ].slice(0, 3);
+  ]
+    .filter(
+      (article, index, articles) =>
+        articles.findIndex((candidate) => candidate.slug === article.slug) === index,
+    )
+    .slice(0, 3);
 
   return (
     <main className="pb-12 pt-6">
@@ -114,7 +109,7 @@ export default async function Home() {
                     {isPopularArticle(article) ? (
                       <>
                         <span className="font-sans text-[var(--accent)]">
-                          Popular #{article.popularRank}
+                          #{article.popularRank}
                         </span>
                         <span aria-hidden="true">•</span>
                       </>

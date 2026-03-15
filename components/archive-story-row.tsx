@@ -1,10 +1,10 @@
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
-import type { ArticleSummary } from "@/lib/content";
+import type { ArticleCatalogEntry } from "@/lib/content";
 
 type ArchiveStoryRowProps = {
-  article: ArticleSummary;
+  article: ArticleCatalogEntry;
   priority?: boolean;
 };
 
