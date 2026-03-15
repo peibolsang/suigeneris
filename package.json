@@ -8,7 +8,7 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint"
   },
   "dependencies": {
     "@fontsource/playfair-display": "^5.2.8",
