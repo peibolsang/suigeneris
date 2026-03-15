@@ -3,13 +3,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArticleCard } from "@/components/article-card";
 import { CategoryFeature } from "@/components/category-feature";
-import { getPopularArticles } from "@/lib/article-popularity";
+import {
+  getPopularArticles,
+  type PopularArticle,
+} from "@/lib/article-popularity";
 import {
   getArticlesByCategory,
   getFeaturedArticle,
   getLatestArticles,
+  type ArticleSummary,
   categories,
 } from "@/lib/content";
+
+function isPopularArticle(article: ArticleSummary | PopularArticle): article is PopularArticle {
+  return typeof (article as PopularArticle).popularRank === "number";
+}
 
 export default async function Home() {
   const [featuredArticle, latestArticles, popularArticles, categoryRows] =
@@ -103,7 +111,7 @@ export default async function Home() {
                   className="group border border-[var(--line)] bg-white p-4 shadow-[var(--shadow)] transition-colors hover:border-[var(--line-strong)] hover:bg-white"
                 >
                   <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
-                    {"popularRank" in article ? (
+                    {isPopularArticle(article) ? (
                       <>
                         <span className="font-sans text-[var(--accent)]">
                           Popular #{article.popularRank}
