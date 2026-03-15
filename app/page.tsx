@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArticleCard } from "@/components/article-card";
 import { CategoryFeature } from "@/components/category-feature";
+import { getPopularArticles } from "@/lib/article-popularity";
 import {
   getArticlesByCategory,
   getFeaturedArticle,
@@ -11,17 +12,30 @@ import {
 } from "@/lib/content";
 
 export default async function Home() {
-  const featuredArticle = await getFeaturedArticle();
-  const latestArticles = await getLatestArticles(4);
+  const [featuredArticle, latestArticles, popularArticles, categoryRows] =
+    await Promise.all([
+      getFeaturedArticle(),
+      getLatestArticles(4),
+      getPopularArticles(3),
+      Promise.all(
+        categories.map(async (category) => ({
+          category,
+          articles: await getArticlesByCategory(category.slug, 2),
+        })),
+      ),
+    ]);
   const leadArticles = latestArticles
     .filter((article) => article.slug !== featuredArticle.slug)
     .slice(0, 3);
-  const categoryRows = await Promise.all(
-    categories.map(async (category) => ({
-      category,
-      articles: await getArticlesByCategory(category.slug, 2),
-    })),
+  const fallbackPopularArticles = leadArticles.filter(
+    (article) =>
+      article.slug !== featuredArticle.slug &&
+      !popularArticles.some((popularArticle) => popularArticle.slug === article.slug),
   );
+  const displayPopularArticles = [
+    ...popularArticles,
+    ...fallbackPopularArticles,
+  ].slice(0, 3);
 
   return (
     <main className="pb-12 pt-6">
@@ -83,12 +97,20 @@ export default async function Home() {
               <h2 className="container-label">Lo + popular</h2>
             </div>
             <div className="mt-5 flex flex-1 flex-col justify-between gap-4">
-              {leadArticles.map((article) => (
+              {displayPopularArticles.map((article) => (
                 <article
                   key={article.slug}
                   className="group border border-[var(--line)] bg-white p-4 shadow-[var(--shadow)] transition-colors hover:border-[var(--line-strong)] hover:bg-white"
                 >
                   <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">
+                    {"popularRank" in article ? (
+                      <>
+                        <span className="font-sans text-[var(--accent)]">
+                          Popular #{article.popularRank}
+                        </span>
+                        <span aria-hidden="true">•</span>
+                      </>
+                    ) : null}
                     <span>{article.publishedLabel}</span>
                     <span aria-hidden="true">•</span>
                     <span className="font-sans text-[var(--accent)]">

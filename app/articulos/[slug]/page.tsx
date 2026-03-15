@@ -2,6 +2,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleCard } from "@/components/article-card";
 import { ArticleToc } from "@/components/article-toc";
+import { ArticleViewTracker } from "@/components/article-view-tracker";
+import {
+  createArticleTrackingToken,
+  getArticlePopularitySnapshot,
+} from "@/lib/article-popularity";
 import {
   formatDate,
   getAllArticles,
@@ -53,7 +58,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
     notFound();
   }
 
-  const relatedArticles = await getRelatedArticles(article.metadata);
+  const [relatedArticles, popularitySnapshot] = await Promise.all([
+    getRelatedArticles(article.metadata),
+    getArticlePopularitySnapshot(article.metadata.popularityId),
+  ]);
+  const trackingToken = createArticleTrackingToken(article.metadata.popularityId);
 
   return (
     <main className="pb-16 pt-8">
@@ -65,6 +74,11 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
               •
             </span>
             <span className="font-sans">{article.metadata.readTime}</span>
+            <ArticleViewTracker
+              articleId={article.metadata.popularityId}
+              trackingToken={trackingToken}
+              initialSnapshot={popularitySnapshot}
+            />
           </div>
           <h1 className="mt-5 max-w-5xl font-display text-[3.6rem] leading-[0.9] tracking-[-0.06em] text-balance md:text-[5.8rem]">
             {article.metadata.title}

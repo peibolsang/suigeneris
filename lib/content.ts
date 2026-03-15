@@ -99,6 +99,7 @@ export type StoryTypeSlug = (typeof storyTypes)[number]["slug"];
 type ArticleFrontmatter = {
   title: string;
   slug: string;
+  popularityId: string;
   excerpt: string;
   publishedAt: string;
   readTime: string;
@@ -115,6 +116,20 @@ export type ArticleSummary = ArticleFrontmatter & {
   categoryLabel: string;
   publishedLabel: string;
 };
+
+export type ArticleCatalogEntry = Pick<
+  ArticleSummary,
+  | "popularityId"
+  | "slug"
+  | "title"
+  | "publishedAt"
+  | "publishedLabel"
+  | "excerpt"
+  | "heroImage"
+  | "heroAlt"
+  | "category"
+  | "categoryLabel"
+>;
 
 export type ArticleEntry = {
   metadata: ArticleSummary;
@@ -177,6 +192,12 @@ function normalizeFrontmatter(
   }
 
   const slug = source.slug ?? fileSlug;
+  const popularityId = source.popularityId?.trim();
+
+  if (!popularityId) {
+    throw new Error(`Missing popularityId in ${fileSlug}.mdx`);
+  }
+
   const category = getCategory(source.category);
   const publishedDate = new Date(source.publishedAt);
   const publishedLabel = new Intl.DateTimeFormat("es-ES", {
@@ -188,6 +209,7 @@ function normalizeFrontmatter(
   return {
     title: source.title,
     slug,
+    popularityId,
     excerpt: source.excerpt,
     publishedAt: source.publishedAt,
     readTime: source.readTime,
@@ -201,6 +223,18 @@ function normalizeFrontmatter(
     categoryLabel: category.label,
     publishedLabel,
   };
+}
+
+function assertUniquePopularityIds(articles: ArticleSummary[]) {
+  const seenIds = new Set<string>();
+
+  for (const article of articles) {
+    if (seenIds.has(article.popularityId)) {
+      throw new Error(`Duplicate popularityId detected: ${article.popularityId}`);
+    }
+
+    seenIds.add(article.popularityId);
+  }
 }
 
 async function readSource(slug: string) {
@@ -235,6 +269,8 @@ export const getAllArticles = cache(async (): Promise<ArticleSummary[]> => {
         return normalizeFrontmatter(data as Partial<ArticleFrontmatter>, slug);
       }),
   );
+
+  assertUniquePopularityIds(articles);
 
   return articles.sort(
     (left, right) =>
@@ -298,6 +334,33 @@ export const getArticleBySlug = cache(
     }
   },
 );
+
+export const getArticleByPopularityId = cache(
+  async (popularityId: string): Promise<ArticleSummary | null> => {
+    const articles = await getAllArticles();
+
+    return (
+      articles.find((article) => article.popularityId === popularityId) ?? null
+    );
+  },
+);
+
+export const getArticleCatalog = cache(async (): Promise<ArticleCatalogEntry[]> => {
+  const articles = await getAllArticles();
+
+  return articles.map((article) => ({
+    popularityId: article.popularityId,
+    slug: article.slug,
+    title: article.title,
+    publishedAt: article.publishedAt,
+    publishedLabel: article.publishedLabel,
+    excerpt: article.excerpt,
+    heroImage: article.heroImage,
+    heroAlt: article.heroAlt,
+    category: article.category,
+    categoryLabel: article.categoryLabel,
+  }));
+});
 
 export async function getRelatedArticles(article: ArticleSummary) {
   const articles = await getAllArticles();

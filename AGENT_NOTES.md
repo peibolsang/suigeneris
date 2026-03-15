@@ -94,3 +94,22 @@
 - When adding a second editorial taxonomy to the articles, keep it separate from the thematic `category`; a dedicated `storyType` frontmatter field avoids overloading the existing content model and leaves the UI free to adopt it later.
 - When a second navigation axis is introduced, keep the existing thematic menu intact and add a separate entrypoint for the editorial taxonomy; in this site, `Estilos` and `Explorar` should stay distinct because they answer different browsing questions.
 - For Vercel Analytics in an App Router project, the minimal integration is enough: install `@vercel/analytics` and mount `<Analytics />` once in `app/layout.tsx` so every route is covered without extra client plumbing.
+- Short editorial labels work better in this header/home system than noun-heavy ones: removing repeated uses of `historias` made the navigation and section framing cleaner without changing information scent.
+- For the story-type taxonomy, plural group labels read better in navigation than singular ones; `Iconos` is clearer as a browsing bucket than `Icono`.
+- On the `/explorar/[slug]` pages, long descriptive copy in the container header should not be width-capped if the design intent is a single-line editorial subhead; `max-w-*` utilities were the actual cause of wrapping there.
+
+## 2026-03-15
+
+- Start every session in this repo by reading both `AGENTS.md` and `AGENT_NOTES.md`; the notes file carries real implementation constraints that are not obvious from the code alone.
+- For codebase orientation, `lib/content.ts` is the highest-leverage entry point because it defines the editorial taxonomies, frontmatter contract, MDX compilation, sorting, related-content logic, and the helper APIs every route consumes.
+- The app is intentionally mostly server-rendered. Keep client boundaries narrow unless interaction truly requires them; right now the meaningful client islands are the Radix navigation menu and the article table of contents.
+- In this Next.js 16 codebase, dynamic route `params` are already modeled as `Promise<{ slug: string }>` and awaited inside pages and metadata. Follow that existing pattern unless the framework contract changes.
+- For popularity features in this MDX-driven site, prefer a stable article identity such as `popularityId` over full URL keys; route slugs are presentation and can change without needing to move ranking state.
+- For popularity backfills, keep the import data keyed by stable article identity and seed Redis via an explicit one-off script rather than encoding manual counts directly inside runtime code paths.
+- For manual popularity imports, reject duplicate article IDs at parse time; silent last-write-wins behavior is too risky for editorial seed data.
+- The initial editorial seed dataset for popularity has been chosen and documented in `temp/popular-posts-prd.md`; treat that file as the source of truth when generating the first Redis backfill script.
+- For this repo, standalone CLI scripts should not import the full `lib/content.ts` runtime because that drags the MDX/Next compilation graph into plain Node execution; frontmatter-only validation scripts are safer and easier to run.
+- Popularity cooldowns should be consumed only after a successful Redis write, not during request preflight, otherwise transient storage failures can suppress valid later reads.
+- Enforce `popularityId` presence and uniqueness inside the content loader itself; catching identity mistakes while reading MDX is safer than discovering them later in the Redis layer.
+- Popularity writes now rely on three production invariants together: a configured canonical origin (`SITE_URL`), a signed tracking token (`POPULARITY_TRACKING_SECRET`), and a Redis-backed cooldown keyed by article plus client fingerprint.
+- Public popularity APIs should never expose raw counts when the UI only needs booleans and ranks; keep exact counts server-side for ranking and archives only.

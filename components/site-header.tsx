@@ -43,7 +43,7 @@ export async function SiteHeader() {
         },
         {
           label: "Lo + popular",
-          href: "/#articulos-populares",
+          href: "/populares",
         },
       ],
     },

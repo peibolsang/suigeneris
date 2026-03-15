@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:popularity": "node --import tsx scripts/seed-popularity.ts"
   },
   "dependencies": {
     "@fontsource/playfair-display": "^5.2.8",
@@ -19,6 +20,7 @@
     "next-mdx-remote": "^6.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "redis": "^5.11.0",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
@@ -29,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
