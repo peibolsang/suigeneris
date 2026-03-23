@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { ArchiveStoryRow } from "@/components/archive-story-row";
 import { getAllArticles } from "@/lib/content";
+import { createPageMetadata } from "@/lib/site-metadata";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Lecturas",
   description:
     "Todo el archivo de Sui géneris reunido en orden cronológico, de lo más reciente a lo más antiguo.",
-};
+  path: "/lecturas",
+});
 
 export default async function ReadingsPage() {
   const articles = await getAllArticles();

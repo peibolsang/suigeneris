@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +12,36 @@ import {
   getHomePageContent,
   type ArticleCatalogEntry,
 } from "@/lib/content";
+import {
+  getAbsoluteUrl,
+  siteDescription,
+  siteLocale,
+  siteName,
+} from "@/lib/site-metadata";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: siteName,
+  },
+  description: siteDescription,
+  alternates: {
+    canonical: getAbsoluteUrl("/"),
+  },
+  openGraph: {
+    title: siteName,
+    description:
+      "Historia, tejidos y cultura del vestir masculino: workwear, Ivy, militaria y elegancia casual.",
+    url: getAbsoluteUrl("/"),
+    siteName,
+    type: "website",
+    locale: siteLocale,
+  },
+  twitter: {
+    card: "summary",
+    title: siteName,
+    description: siteDescription,
+  },
+};
 
 function isPopularArticle(
   article: ArticleCatalogEntry | PopularArticle,

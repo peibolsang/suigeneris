@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { ArchiveStoryRow } from "@/components/archive-story-row";
 import { getPopularArticles } from "@/lib/article-popularity";
+import { createPageMetadata } from "@/lib/site-metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Lo + popular",
   description:
     "Las lecturas más visitadas de Sui géneris, ordenadas por popularidad real.",
-};
+  path: "/populares",
+});
 
 export default async function PopularArticlesPage() {
   const popularArticles = await getPopularArticles();

@@ -6,6 +6,7 @@ import {
   getArticlesByCategory,
   getCategoryFromSlug,
 } from "@/lib/content";
+import { createPageMetadata } from "@/lib/site-metadata";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -33,8 +34,12 @@ export async function generateMetadata({
   }
 
   return {
-    title: category.label,
-    description: category.description,
+    ...createPageMetadata({
+      title: category.label,
+      description: category.description,
+      path: `/categorias/${category.slug}`,
+    }),
+    keywords: [category.label, "menswear", "historia del vestir"],
   };
 }
 

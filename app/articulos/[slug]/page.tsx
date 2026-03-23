@@ -11,8 +11,17 @@ import {
   formatDate,
   getAllArticles,
   getArticleBySlug,
+  getCategoryFromSlug,
   getRelatedArticles,
 } from "@/lib/content";
+import {
+  createPageMetadata,
+  getAbsoluteUrl,
+  getArticleUrl,
+  getCategoryUrl,
+  siteLanguage,
+  siteName,
+} from "@/lib/site-metadata";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -42,14 +51,19 @@ export async function generateMetadata({
   }
 
   return {
-    title: article.metadata.title,
-    description: article.metadata.excerpt,
-    openGraph: {
+    ...createPageMetadata({
       title: article.metadata.title,
       description: article.metadata.excerpt,
+      path: `/articulos/${article.metadata.slug}`,
       images: [article.metadata.heroImage],
-      type: "article",
-    },
+      keywords: [
+        ...article.metadata.tags,
+        article.metadata.storyType,
+        article.metadata.categoryLabel ?? "",
+      ].filter(Boolean),
+      openGraphType: "article",
+      publishedTime: article.metadata.publishedAt,
+    }),
   };
 }
 
@@ -63,6 +77,66 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   const relatedArticles = await getRelatedArticles(article.metadata);
   const trackingToken = createArticleTrackingToken(article.metadata.popularityId);
+  const articleUrl = getArticleUrl(article.metadata.slug);
+  const category = article.metadata.category
+    ? getCategoryFromSlug(article.metadata.category)
+    : null;
+  const breadcrumbItems = [
+    {
+      position: 1,
+      name: siteName,
+      item: getAbsoluteUrl("/"),
+    },
+    ...(category
+      ? [
+          {
+            position: 2,
+            name: category.label,
+            item: getCategoryUrl(category.slug),
+          },
+        ]
+      : []),
+    {
+      position: category ? 3 : 2,
+      name: article.metadata.title,
+      item: articleUrl,
+    },
+  ];
+  const structuredData = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.metadata.title,
+      description: article.metadata.excerpt,
+      image: [getAbsoluteUrl(article.metadata.heroImage)],
+      datePublished: article.metadata.publishedAt,
+      dateModified: article.metadata.publishedAt,
+      inLanguage: siteLanguage,
+      mainEntityOfPage: articleUrl,
+      articleSection: article.metadata.categoryLabel ?? article.metadata.storyType,
+      keywords: article.metadata.tags,
+      author: {
+        "@type": "Organization",
+        name: siteName,
+        url: getAbsoluteUrl("/"),
+      },
+      publisher: {
+        "@type": "Organization",
+        name: siteName,
+        url: getAbsoluteUrl("/"),
+      },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: breadcrumbItems.map((item) => ({
+        "@type": "ListItem",
+        position: item.position,
+        name: item.name,
+        item: item.item,
+      })),
+    },
+  ];
   const popularitySnapshot: PopularitySnapshot = trackingToken
     ? {
         enabled: true,
@@ -79,6 +153,10 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
 
   return (
     <main className="pb-16 pt-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <section className="panel px-5 py-6 md:px-8 md:py-8">
         <div>
           <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.24em] text-[var(--muted)]">

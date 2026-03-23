@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { StoryTypeRow } from "@/components/story-type-row";
 import { getStoryTypeSummaries } from "@/lib/content";
+import { createPageMetadata } from "@/lib/site-metadata";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Explorar",
   description:
     "Un mapa del archivo por tipo de historia: lo básico, historia, variantes, iconos, cómo llevarlo y opinión.",
-};
+  path: "/explorar",
+});
 
 export default async function ExplorePage() {
   const storyTypeSummaries = await getStoryTypeSummaries();

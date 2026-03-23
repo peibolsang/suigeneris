@@ -5,21 +5,68 @@ import "@fontsource/playfair-display/latin-700.css";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { SiteHeader } from "@/components/site-header";
+import {
+  getAbsoluteUrl,
+  getArticleIndexUrl,
+  getFeedUrl,
+  getLlmsUrl,
+  siteDescription,
+  siteLanguage,
+  siteLocale,
+  siteName,
+  siteOrigin,
+} from "@/lib/site-metadata";
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: siteName,
+  description: siteDescription,
+  url: getAbsoluteUrl("/"),
+  inLanguage: siteLanguage,
+  publisher: {
+    "@type": "Organization",
+    name: siteName,
+    url: getAbsoluteUrl("/"),
+  },
+  hasPart: [
+    {
+      "@type": "DataFeed",
+      name: "RSS Feed",
+      url: getFeedUrl(),
+    },
+    {
+      "@type": "DataFeed",
+      name: "Article Index JSON",
+      url: getArticleIndexUrl(),
+    },
+    {
+      "@type": "DigitalDocument",
+      name: "llms.txt",
+      url: getLlmsUrl(),
+    },
+  ],
+};
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://suigeneris.vercel.app"),
+  metadataBase: new URL(siteOrigin),
   title: {
-    default: "Sui géneris",
-    template: "%s | Sui géneris",
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
-  description:
-    "Revista editorial sobre historia del menswear, tejidos, íconos del vestir y cultura visual.",
+  description: siteDescription,
   openGraph: {
-    title: "Sui géneris",
+    title: siteName,
     description:
       "Historia, tejidos y cultura del vestir masculino: workwear, Ivy, militaria y elegancia casual.",
+    siteName,
     type: "website",
-    locale: "es_ES",
+    locale: siteLocale,
+  },
+  twitter: {
+    card: "summary",
+    title: siteName,
+    description: siteDescription,
   },
 };
 
@@ -52,6 +99,10 @@ export default function RootLayout({
             </div>
           </footer>
         </div>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <Analytics />
       </body>
     </html>

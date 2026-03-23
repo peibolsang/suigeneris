@@ -6,6 +6,7 @@ import {
   getStoryTypeFromSlug,
   storyTypes,
 } from "@/lib/content";
+import { createPageMetadata } from "@/lib/site-metadata";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -33,8 +34,12 @@ export async function generateMetadata({
   }
 
   return {
-    title: storyType.label,
-    description: storyType.description,
+    ...createPageMetadata({
+      title: storyType.label,
+      description: storyType.description,
+      path: `/explorar/${storyType.slug}`,
+    }),
+    keywords: [storyType.label, "menswear", "archivo editorial"],
   };
 }
 
