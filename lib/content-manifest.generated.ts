@@ -3,6 +3,7 @@
 
 export const contentManifest = {
   "allArticleSlugs": [
+    "yellowstone-serie-menswear",
     "carpenter-chef-painter-fatigue-pierna-recta",
     "sashiko-reparacion-textil-y-menswear",
     "chore-coat-workwear-fundacional",
@@ -31,13 +32,100 @@ export const contentManifest = {
     "woolrich-arctic-parka-frio-icono-civil"
   ],
   "latestArticleSlugs": [
+    "yellowstone-serie-menswear",
     "carpenter-chef-painter-fatigue-pierna-recta",
     "sashiko-reparacion-textil-y-menswear",
-    "chore-coat-workwear-fundacional",
-    "algodon-fibra-larga-origen-calidad"
+    "chore-coat-workwear-fundacional"
   ],
   "featuredArticleSlug": "chore-coat-workwear-fundacional",
   "articleBySlug": {
+    "yellowstone-serie-menswear": {
+      "slug": "yellowstone-serie-menswear",
+      "popularityId": "yellowstone-viste-autoridad",
+      "title": "Yellowstone es, en el fondo, una serie de menswear",
+      "excerpt": "La ropa de Yellowstone funciona porque no convierte el Oeste en disfraz. Convierte chaquetas enceradas, vaqueros serios, camisas vaqueras y abrigos caros en un lenguaje de poder, clase, trabajo y amenaza.",
+      "publishedAt": "2026-03-22",
+      "publishedLabel": "22 mar 2026",
+      "readTime": "13 min",
+      "category": "vintage-americana",
+      "categoryLabel": "Vintage Americana",
+      "storyType": "Opinión",
+      "tags": [
+        "Yellowstone",
+        "Ropa del Oeste",
+        "Filson",
+        "Freenote Cloth",
+        "Schaefer Outfitter",
+        "Rip Wheeler",
+        "John Dutton"
+      ],
+      "heroImage": "https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=1600&q=80",
+      "heroAlt": "Silueta de un vaquero con sombrero en un paisaje abierto al atardecer.",
+      "relatedSlugs": [
+        "wrangler-13mwz-icono-vaquero",
+        "chore-coat-workwear-fundacional",
+        "trucker-jackets-type-1-2-3"
+      ],
+      "resolvedRelatedSlugs": [
+        "wrangler-13mwz-icono-vaquero",
+        "chore-coat-workwear-fundacional",
+        "trucker-jackets-type-1-2-3"
+      ],
+      "featured": false,
+      "sections": [
+        {
+          "id": "por-que-el-vestuario-funciona",
+          "title": "Por qué el vestuario funciona",
+          "level": 2
+        },
+        {
+          "id": "rip-wheeler-y-la-autoridad-de-ir-siempre-medio-enfadado",
+          "title": "Rip Wheeler y la autoridad de ir siempre medio enfadado",
+          "level": 2
+        },
+        {
+          "id": "kayce-dutton-y-la-mejor-chaqueta-de-transicion-de-toda-la-serie",
+          "title": "Kayce Dutton y la mejor chaqueta de transición de toda la serie",
+          "level": 2
+        },
+        {
+          "id": "john-dutton-no-viste-como-un-ranchero-mas",
+          "title": "John Dutton no viste como un ranchero más",
+          "level": 2
+        },
+        {
+          "id": "los-iconos-que-se-escapan-si-solo-miras-a-rip-y-kayce",
+          "title": "Los iconos que se escapan si solo miras a Rip y Kayce",
+          "level": 2
+        },
+        {
+          "id": "beth-dutton-como-contraste-util",
+          "title": "Beth Dutton como contraste útil",
+          "level": 2
+        },
+        {
+          "id": "la-gramatica-ranchera-vale-tanto-como-las-marcas",
+          "title": "La gramática ranchera vale tanto como las marcas",
+          "level": 2
+        },
+        {
+          "id": "lo-indigena-no-es-un-estampado-generico",
+          "title": "Lo indígena no es un estampado genérico",
+          "level": 2
+        },
+        {
+          "id": "las-marcas-que-realmente-importan",
+          "title": "Las marcas que realmente importan",
+          "level": 2
+        },
+        {
+          "id": "lo-que-yellowstone-entendio-antes-que-mucha-moda-del-oeste",
+          "title": "Lo que Yellowstone entendió antes que mucha moda del Oeste",
+          "level": 2
+        }
+      ],
+      "sourcePath": "content/articles/yellowstone-serie-menswear.mdx"
+    },
     "carpenter-chef-painter-fatigue-pierna-recta": {
       "slug": "carpenter-chef-painter-fatigue-pierna-recta",
       "popularityId": "carpenter-chef-painter-fatigue-pierna-recta",
@@ -175,8 +263,8 @@ export const contentManifest = {
         "Chore Coat",
         "Denim"
       ],
-      "heroImage": "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1600&q=80",
-      "heroAlt": "Chaqueta de trabajo azul colgada junto a otras prendas de herencia utilitaria.",
+      "heroImage": "https://i80dpdnoqraz4byx.public.blob.vercel-storage.com/chorecoat1.png",
+      "heroAlt": "Modelo llevando chaqueta de trabajo azul en un ambiente urbano.",
       "relatedSlugs": [
         "chambray-y-fatiga",
         "m65-legado-civil"
@@ -713,7 +801,7 @@ export const contentManifest = {
       "slug": "sudaderas-crewneck-triangulo-cuello",
       "popularityId": "sudaderas-crewneck-triangulo-cuello",
       "title": "El pequeño triángulo que explica la sudadera clásica",
-      "excerpt": "El inserto en V del cuello no es un misterio esotérico: nació dentro del sportswear de algodón como una solución probable de construcción y absorción, y con el tiempo pasó a ser también una firma visual.",
+      "excerpt": "El inserto en V del cuello no es un misterio esotérico. Nació dentro del sportswear de algodón como una solución probable de construcción y elasticidad, con una relación plausible con la gestión del sudor, y con el tiempo pasó a ser también una firma visual.",
       "publishedAt": "2026-01-12",
       "publishedLabel": "12 ene 2026",
       "readTime": "9 min",
@@ -1523,6 +1611,7 @@ export const contentManifest = {
     }
   },
   "articleByPopularityId": {
+    "yellowstone-viste-autoridad": "yellowstone-serie-menswear",
     "carpenter-chef-painter-fatigue-pierna-recta": "carpenter-chef-painter-fatigue-pierna-recta",
     "sashiko-reparacion-textil-y-menswear": "sashiko-reparacion-textil-y-menswear",
     "chore-coat-workwear-fundacional": "chore-coat-workwear-fundacional",
@@ -1558,6 +1647,7 @@ export const contentManifest = {
       "chambray-y-fatiga"
     ],
     "vintage-americana": [
+      "yellowstone-serie-menswear",
       "denim-japones-y-mito-americano",
       "wrangler-13mwz-icono-vaquero",
       "cone-mills-white-oak-gustin-deadstock",
@@ -1622,6 +1712,7 @@ export const contentManifest = {
       "chambray-y-fatiga"
     ],
     "Opinión": [
+      "yellowstone-serie-menswear",
       "aaron-levine-elegancia-casual",
       "buzz-rickson-atencion-al-detalle"
     ]

@@ -31,7 +31,6 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${GeistSans.variable} antialiased`}>
-        <div className="grain-overlay" />
         <div className="relative mx-auto min-h-screen max-w-[1600px] px-4 pb-10 sm:px-6 lg:px-10">
           <SiteHeader />
           {children}

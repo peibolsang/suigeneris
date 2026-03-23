@@ -21,28 +21,57 @@ export function ArticleToc({ sections }: ArticleTocProps) {
       return;
     }
 
-    const updateActiveId = () => {
-      const scrollOffset = 160;
-      let nextActiveId = sections[0].id;
+    const sectionIds = new Set(sections.map((section) => section.id));
+    const headingElements = sections
+      .map((section) => document.getElementById(section.id))
+      .filter((element): element is HTMLElement => Boolean(element));
 
-      for (const section of sections) {
-        const element = document.getElementById(section.id);
+    if (headingElements.length === 0) {
+      return;
+    }
 
-        if (element && element.getBoundingClientRect().top <= scrollOffset) {
-          nextActiveId = section.id;
-        }
+    const updateFromHash = () => {
+      const hashId = window.location.hash.replace(/^#/, "");
+
+      if (!sectionIds.has(hashId)) {
+        return;
       }
 
-      setActiveId(nextActiveId);
+      setActiveId((currentId) => (currentId === hashId ? currentId : hashId));
     };
 
-    updateActiveId();
-    window.addEventListener("scroll", updateActiveId, { passive: true });
-    window.addEventListener("hashchange", updateActiveId);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort(
+            (left, right) =>
+              left.boundingClientRect.top - right.boundingClientRect.top,
+          );
+
+        const nextActiveId = visibleEntries[0]?.target.id;
+
+        if (!nextActiveId) {
+          return;
+        }
+
+        setActiveId((currentId) =>
+          currentId === nextActiveId ? currentId : nextActiveId,
+        );
+      },
+      {
+        rootMargin: "-140px 0px -55% 0px",
+        threshold: 0,
+      },
+    );
+
+    headingElements.forEach((element) => observer.observe(element));
+    updateFromHash();
+    window.addEventListener("hashchange", updateFromHash);
 
     return () => {
-      window.removeEventListener("scroll", updateActiveId);
-      window.removeEventListener("hashchange", updateActiveId);
+      observer.disconnect();
+      window.removeEventListener("hashchange", updateFromHash);
     };
   }, [sections]);
 

@@ -15,7 +15,7 @@ export function ArticleImage({ src, alt, caption }: ArticleImageProps) {
           alt={alt}
           fill
           sizes="(max-width: 1024px) 100vw, 900px"
-          className="object-cover sepia-[0.12]"
+          className="object-cover"
         />
       </div>
       <figcaption className="px-2 pb-1 pt-4 text-sm leading-[1.45] tracking-normal text-[var(--muted)]">

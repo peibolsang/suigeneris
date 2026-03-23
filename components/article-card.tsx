@@ -27,7 +27,7 @@ export function ArticleCard({
               fill
               priority={priority}
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover sepia-[0.14] transition duration-700 group-hover:scale-[1.03]"
+              className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[rgba(18,12,7,0.78)] via-transparent to-[rgba(255,250,244,0.06)]" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-[rgba(255,245,235,0.96)] sm:p-6">
@@ -51,14 +51,14 @@ export function ArticleCard({
 
   if (variant === "compact") {
     return (
-      <article className="group flex h-full flex-col gap-4 border border-[var(--line)] bg-white p-4 shadow-[var(--shadow)] transition-all hover:-translate-y-0.5 hover:border-[var(--line-strong)] hover:bg-white">
+      <article className="group flex h-full flex-col gap-4 border border-[var(--line)] bg-white p-4 shadow-[var(--shadow)] transition-[transform,border-color] hover:-translate-y-0.5 hover:border-[var(--line-strong)] hover:bg-white">
         <div className="relative aspect-[1.2/1] overflow-hidden">
           <Image
             src={article.heroImage}
             alt={article.heroAlt}
             fill
             sizes="(max-width: 768px) 100vw, 24vw"
-            className="object-cover sepia-[0.18] transition duration-500 group-hover:scale-[1.04]"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         </div>
         <div className="flex flex-1 flex-col">
@@ -97,7 +97,7 @@ export function ArticleCard({
   }
 
   return (
-    <article className="group flex h-full flex-col gap-4 border border-[var(--line)] bg-white p-4 shadow-[var(--shadow)] transition-all hover:-translate-y-0.5 hover:border-[var(--line-strong)] hover:bg-white">
+    <article className="group flex h-full flex-col gap-4 border border-[var(--line)] bg-white p-4 shadow-[var(--shadow)] transition-[transform,border-color] hover:-translate-y-0.5 hover:border-[var(--line-strong)] hover:bg-white">
       <div className="relative block aspect-[1.06/1] overflow-hidden">
         <Image
           src={article.heroImage}
@@ -105,7 +105,7 @@ export function ArticleCard({
           fill
           priority={priority}
           sizes="(max-width: 768px) 100vw, 25vw"
-          className="object-cover sepia-[0.18] transition duration-500 group-hover:scale-[1.04]"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
       </div>
       <div className="flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.22em] text-[var(--muted)]">

@@ -64,7 +64,7 @@ export default async function Home() {
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 60vw"
-                className="object-cover sepia-[0.12] transition duration-700 group-hover:scale-[1.02]"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
               />
             </div>
             <div className="px-5 pb-5 md:px-6 md:pb-6">

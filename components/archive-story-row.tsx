@@ -23,7 +23,7 @@ export function ArchiveStoryRow({
           fill
           priority={priority}
           sizes="(max-width: 1024px) 100vw, 34vw"
-          className="object-cover sepia-[0.08] transition duration-500 group-hover:scale-[1.02]"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
         />
       </div>
 
